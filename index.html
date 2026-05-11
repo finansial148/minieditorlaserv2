@@ -3,7 +3,7 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-    <title>Buat karya</title>
+    <title>minieditor laser v2</title>
     <style>
       html, body {
     overscroll-behavior-y: contain !important;
@@ -406,9 +406,12 @@ div#kontrol-pintar {
 
         <div style="flex: 2; min-width: 300px;">
             <div id="canvas-editor">
-              <canvas id="layer-coret" style="position: absolute; top: 0; left: 0; z-index: 5; pointer-events: none;"></canvas>
-              <div style="position:absolute; top:2px; left:2px; font-size:10px; color:#3498db; pointer-events:none; font-family:Arial;">
-    <i class="fas fa-ruler-combined"></i> 0 cm
+              <div id="wrapper-kanvas" style="position: relative; display: inline-block; padding-top: 25px; padding-left: 25px;">
+    <div id="ruler-atas" style="position: absolute; top: 0; left: 25px; right: 0; height: 20px; display: flex; border-bottom: 1px solid #3498db; overflow: hidden;"></div>
+    
+    <div id="ruler-samping" style="position: absolute; top: 25px; left: 0; bottom: 0; width: 20px; border-right: 1px solid #3498db; overflow: hidden;"></div>
+
+    <canvas id="layer-coret" width="300" height="400" style="background: white; border: 1px solid #ccc;"></canvas>
 </div>
                 <img id="logo-geser" src="" draggable="false" style="display: none; position: absolute; cursor: move; width: 150px; top: 20px; left: 20px; user-select: none;">
                 <div id="teks-geser" draggable="false" style="position: absolute; cursor: move; top: 200px; left: 20px; font-size: 40px; color: black; white-space: nowrap; user-select: none; font-family: Arial;">
@@ -1297,7 +1300,47 @@ async function downloadPDF() {
     pdf.addImage(imgData, 'PNG', x, y, lebarFinal, tinggiFinal);
     pdf.save(`Orderan-${namaFile}.pdf`);
 }
+//PENGGARIS-------
+function buatPenggaris() {
+    const canvas = document.getElementById('layer-coret');
+    const rulerAtas = document.getElementById('ruler-atas');
+    const rulerSamping = document.getElementById('ruler-samping');
+    
+    const pixelPerCm = 37.8; // Standar konversi pixel ke cm
+    const lebarCm = Math.floor(canvas.width / pixelPerCm);
+    const tinggiCm = Math.floor(canvas.height / pixelPerCm);
 
+    // Bikin Angka Atas
+    rulerAtas.innerHTML = "";
+    for (let i = 0; i <= lebarCm; i++) {
+        let span = document.createElement("span");
+        span.style.position = "absolute";
+        span.style.left = (i * pixelPerCm) + "px";
+        span.style.fontSize = "9px";
+        span.style.color = "#3498db";
+        span.innerHTML = `| ${i}`;
+        rulerAtas.appendChild(span);
+    }
+
+    // Bikin Angka Samping
+    rulerSamping.innerHTML = "";
+    for (let j = 0; j <= tinggiCm; j++) {
+        let span = document.createElement("span");
+        span.style.position = "absolute";
+        span.style.top = (j * pixelPerCm) + "px";
+        span.style.fontSize = "9px";
+        span.style.color = "#3498db";
+        span.style.width = "100%";
+        span.style.textAlign = "right";
+        span.innerHTML = `${j} -`;
+        rulerSamping.appendChild(span);
+    }
+}
+
+// Panggil fungsi ini pas halaman dibuka
+window.onload = buatPenggaris;
+
+	  
 // Inisialisasi awal geser buat logo lama kalau ada
 if(document.getElementById("logo-geser")) bikinBisaDigeser(document.getElementById("logo-geser"));
     
