@@ -15,6 +15,7 @@
 <meta content='yes' name='mobile-web-app-capable'/>
 <meta content='#c3c3c3' name='apple-mobile-web-app-status-bar-style'/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <title>minieditor laser v2</title>
     <style>
       html, body {
@@ -281,12 +282,80 @@ div#kontrol-pintar {
     border: 0;
     border-bottom: 1px dotted #00000080;
 }
+      #canvas-editor.pake-grid {
+    background-image: 
+        linear-gradient(to right, rgba(0,0,0,0.1) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0,0,0,0.1) 1px, transparent 1px);
+    background-size: 20px 20px; /* Jarak grid-nya, bisa disesuaikan */
+}
+      .btn-fullscreen-sultan {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* Biar bulat cakep */
+    background: #e74c3c; /* Warna merah biar gampang dicari mata */
+    color: white;
+    border: 2px solid white;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+    z-index: 9999; /* Biar nggak ketutupan elemen lain */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+/* Biar pas dipencet ada efek mantulnya dikit */
+.btn-fullscreen-sultan:active {
+    transform: scale(0.9);
+}
+      .btn-fullscreen-sultan {
+    /* ... kode yang tadi ... */
+    opacity: 0.6; /* Agak transparan biar nggak ganggu */
+    transition: 0.3s; /* Biar animasinya halus */
+}
+
+.btn-fullscreen-sultan:hover, 
+.btn-fullscreen-sultan:active {
+    opacity: 1; /* Terang lagi pas mau dipencet */
+}
+      #notif-instal {
+    display: none; /* Sembunyi dulu */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #2c3e50;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    z-index: 10000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    font-family: sans-serif;
+}
+#notif-instal button {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    margin-left: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
           </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 </head>
 <body>
+  <div id="notif-instal">
+    <span>Biar ngeditnya makin "loncer", instal aplikasi MEL v2 di HP Abang yuk!</span>
+    <button onclick="eksekusiInstal()">INSTAL SEKARANG</button>
+    <button onclick="tutupNotif()" style="background:transparent; border:1px solid white;">NANTI AJA</button>
+</div>
   <div style="position: fixed;top: 0;left: 0;z-index: 9;background: white;width: 100%;height: 100%;overflow: overlay;">
   <div class="editor-keren" style="max-width: 800px; margin: auto; font-family: 'Segoe UI'">
     <h2 style="text-align: center; color: #2c3e50;background: #c3c3c3;height: 50px;margin: 0;"> Mini Editor Laser v.2</h2>
@@ -384,6 +453,8 @@ div#kontrol-pintar {
         <button onclick="tektebal()" id="btn-bold" title="Tebalkan Font"><b>B</b></button>
         <button onclick="tekmiring()" id="btn-italic" title="Miringkan Font" style="font-style: italic; font-family: serif;">I</button>
         <button onclick="duplikatElemen()" title="Duplikat Elemen"><i class="fas fa-copy"></i>Copy</button>
+        <button onclick="invertWarnaElemen()">Balik Warna</button>
+        <button onclick="toggleGrid()">Garis Bantu</button>
         <button id="tombol-hapus" onclick="hapusElemen()" class="btn-hapus">
             <i class="fas fa-trash"></i>
         </button>
@@ -526,6 +597,7 @@ div#kontrol-pintar {
   <button id="expki" onclick="tambahTeksBaru()" style="display:none;border:1px solid #00000087;">Kirim</button>
 </div>
   </div>
+  <button class="btn-fullscreen-sultan" onclick="modeLayarLebar()" title="Mode Layar Tancep"><i class="fas fa-expand"></i></button>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>  
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   
@@ -1389,6 +1461,25 @@ async function simpanPNG() {
     
     tampilModal("Selesai!", "Gambar PNG sudah masuk ke folder Download.", "peringatan");
 }    
+
+//HITAM PUTIH GAMBAR
+function invertWarnaElemen() {
+    if (elemenTerpilih && elemenTerpilih.tagName === 'IMG') {
+        // Cek apakah sudah ada filter, kalau belum kita kasih
+        if (elemenTerpilih.style.filter === "invert(1)") {
+            elemenTerpilih.style.filter = "invert(0)";
+        } else {
+            elemenTerpilih.style.filter = "invert(1)";
+        }
+    } else {
+        tampilModal("Pilih Gambar", "Klik dulu gambar yang mau di-invert warnanya, Bang!", "peringatan");
+    }
+}
+    
+function toggleGrid() {
+    const canvas = document.getElementById('canvas-editor');
+    canvas.classList.toggle('pake-grid');
+}
     
 //PENGGARIS-------
 function buatPenggaris() {
@@ -1501,6 +1592,52 @@ function tambahTeksOtomatis(isiTeks) {
     // Langsung jadikan elemen terpilih biar bisa diedit
     elemenTerpilih = teksBaru;
     document.getElementById('kontrol-pintar').style.display = 'flex';
+}
+    
+//MODEL LAYAR LEBAR
+function modeLayarLebar() {
+    const elem = document.documentElement;
+    const ikon = document.querySelector('.btn-fullscreen-sultan i');
+
+    if (!document.fullscreenElement) {
+        if (elem.requestFullscreen) { elem.requestFullscreen(); }
+        if (screen.orientation && screen.orientation.lock) { screen.orientation.lock('landscape'); }
+        
+        // Ganti ikon jadi panah ngecil (Compress)
+        ikon.className = "fas fa-compress";
+    } else {
+        if (document.exitFullscreen) { document.exitFullscreen(); }
+        // Ganti ikon balik jadi panah lebar (Expand)
+        ikon.className = "fas fa-expand";
+    }
+}
+    
+let pemicuInstal;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Cegah Chrome munculin notifikasi bawaan yang kecil
+    e.preventDefault();
+    // Simpan kejadiannya biar bisa kita panggil pas tombol dipencet
+    pemicuInstal = e;
+    // Tampilkan bar ajakan buatan kita sendiri
+    document.getElementById('notif-instal').style.display = 'block';
+});
+
+function eksekusiInstal() {
+    if (pemicuInstal) {
+        pemicuInstal.prompt(); // Munculkan jendela instalasi asli
+        pemicuInstal.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User setuju instal, mantap!');
+            }
+            document.getElementById('notif-instal').style.display = 'none';
+            pemicuInstal = null;
+        });
+    }
+}
+
+function tutupNotif() {
+    document.getElementById('notif-instal').style.display = 'none';
 }
   
 document.addEventListener('keydown', function(e) {
