@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Allura&family=Anton&family=Audiowide&family=Bagel+Fat+One&family=Bebas+Neue&family=Caveat&family=Changa+One&family=Cormorant+Garamond:wght@400;700&family=Courgette&family=Dancing+Script:wght@400;700&family=Exo+2:wght@400;700&family=Fjalla+One&family=Goldman&family=Great+Vibes&family=Gruppo&family=Indie+Flower&family=Libre+Baskerville:wght@400;700&family=Lobster&family=Lobster+Two:wght@400;700&family=Montserrat+Alternates:wght@400;900&family=Orbitron:wght@400;900&family=Outfit:wght@400;900&family=Pacifico&family=Parisienne&family=PT+Serif:wght@400;700&family=Questrial&family=Quicksand:wght@400;700&family=Rajdhani:wght@400;700&family=Ramabhadra&family=Red+Hat+Display:wght@400;900&family=Righteous&family=Sacramento&family=Satisfy&family=Shadows+Into+Light&family=Smooch+Sans:wght@400;900&family=Urbanist:wght@400;900&family=Yellowtail&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>minieditor laser v2</title>
     <style>
@@ -261,6 +264,13 @@ div#kontrol-pintar {
     outline: 2px dashed #f1c40f !important; /* Kuning cerah biar keliatan */
     outline-offset: 5px;
 }
+      div#menuFile button {
+    margin: 10px;
+    padding: 5px;
+    background: no-repeat;
+    border: 0;
+    border-bottom: 1px dotted #00000080;
+}
           </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
@@ -269,10 +279,7 @@ div#kontrol-pintar {
 <body>
   <div style="position: fixed;top: 0;left: 0;z-index: 9;background: white;width: 100%;height: 100%;overflow: overlay;">
   <div class="editor-keren" style="max-width: 800px; margin: auto; font-family: 'Segoe UI'">
-    <h2 style="text-align: center; color: #2c3e50;background: #c3c3c3;height: 50px;margin: 0;"> Mini Editor Laser v.1
-    <button onclick="downloadPDF()" style=" position:relative;background: #27ae60; color: white; padding: 5px 15px; border: none; border-radius: 5px; margin-top: 5px;margin-right: 10px; cursor: pointer; font-size: 16px; font-weight: bold;float: right;">
-                Save
-            </button></h2>
+    <h2 style="text-align: center; color: #2c3e50;background: #c3c3c3;height: 50px;margin: 0;"> Mini Editor Laser v.2</h2>
    <div class="menu-kontainer">
      
       <input type="text" id="inputTopik" placeholder="Ketik gambar...">
@@ -301,51 +308,51 @@ div#kontrol-pintar {
         <button onclick="hapusCoretan()" title="Hapus Semua Coretan" style="color: #e74c3c;"><i class="fas fa-trash-alt"></i></button>
       </div>
     <div id="opsi-font" class="options-container">
-<div class="option" onclick="pilihFont('Arial', 'Arial')">Arial</div>
-<div class="option" style="font-family: 'Anton';" onclick="pilihFont('Anton', 'Anton')">Anton</div>
-<div class="option" style="font-family: 'Allura';" onclick="pilihFont('Allura', 'Allura')">Allura</div>
-<div class="option" style="font-family: 'Alfa Slab One';" onclick="pilihFont('Alfa Slab One', 'Alfa Slab One')">Alfa Slab One</div>
-<div class="option" style="font-family: 'Audiowide';" onclick="pilihFont('Audiowide', 'Audiowide')">Audiowide</div>
-<div class="option" style="font-family: 'Bagel Fat One';" onclick="pilihFont('Bagel Fat One', 'Bagel Fat One')">Bagel Fat One</div>
-<div class="option" style="font-family: 'Bebas Neue';" onclick="pilihFont('Bebas Neue', 'Bebas Neue')">Bebas Neue</div>
-<div class="option" style="font-family: 'Courgette';" onclick="pilihFont('Courgette', 'Courgette')">Courgette</div>
-<div class="option" style="font-family: 'courier';" onclick="pilihFont('courier', 'courier')">courier</div>
-<div class="option" style="font-family: 'Caveat';" onclick="pilihFont('Caveat', 'Caveat')">Caveat</div>
-<div class="option" style="font-family: 'Cormorant Garamond';" onclick="pilihFont('Cormorant Garamond', 'Cormorant Garamond')">Cormorant Garamond</div>
-<div class="option" style="font-family: 'Changa One';" onclick="pilihFont('Changa One', 'Changa One')">Changa One</div>
-<div class="option" style="font-family: 'Dancing Script';" onclick="pilihFont('Dancing Script', 'Dancing Script')">Dancing Script</div>
-<div class="option" style="font-family: 'Exo 2';" onclick="pilihFont('Exo 2', 'Exo 2')">Exo 2</div>
-<div class="option" style="font-family: 'Fjalla One';" onclick="pilihFont('Fjalla One', 'Fjalla One')">Fjalla One</div>
-<div class="option" style="font-family: 'Great Vibes';" onclick="pilihFont('Great Vibes', 'Great Vibes')">Great Vibes</div>
-<div class="option" style="font-family: 'Gruppo';" onclick="pilihFont('Gruppo', 'Gruppo')">Gruppo</div>
-<div class="option" style="font-family: 'georgia';" onclick="pilihFont('georgia', 'georgia')">georgia</div>
-<div class="option" style="font-family: 'Goldman';" onclick="pilihFont('Goldman', 'Goldman')">Goldman</div>
-<div class="option" style="font-family: 'helvetica';" onclick="pilihFont('helvetica', 'helvetica')">helvetica</div>
-<div class="option" style="font-family: 'Indie Flower';" onclick="pilihFont('Indie Flower', 'Indie Flower')">Indie Flower</div>
-<div class="option" style="font-family: 'Libre Baskerville';" onclick="pilihFont('Libre Baskerville', 'Libre Baskerville')">Libre Baskerville</div>
-<div class="option" style="font-family: 'Lobster Two';" onclick="pilihFont('Lobster Two', 'Lobster Two')">Lobster Two</div>
-<div class="option" style="font-family: 'Lobster';" onclick="pilihFont('Lobster', 'Lobster')">Lobster</div>
-<div class="option" style="font-family: 'Montserrat Alternates';" onclick="pilihFont('Montserrat Alternates', 'Montserrat Alternates')">Montserrat Alternates</div>
-<div class="option" style="font-family: 'Orbitron';" onclick="pilihFont('Orbitron', 'Orbitron')">Orbitron</div>
-<div class="option" style="font-family: 'Outfit';" onclick="pilihFont('Outfit', 'Outfit')">Outfit</div>
-<div class="option" style="font-family: 'Quicksand';" onclick="pilihFont('Quicksand', 'Quicksand')">Quicksand</div>
-<div class="option" style="font-family: 'Questrial';" onclick="pilihFont('Questrial', 'Questrial')">Questrial</div>
-<div class="option" style="font-family: 'Parisienne';" onclick="pilihFont('Parisienne', 'Parisienne')">Parisienne</div>
-<div class="option" style="font-family: 'Pacifico';" onclick="pilihFont('Pacifico', 'Pacifico')">Pacifico</div>
-<div class="option" style="font-family: 'Satisfy';" onclick="pilihFont('Satisfy', 'Satisfy')">Satisfy</div>
-<div class="option" style="font-family: 'Righteous';" onclick="pilihFont('Righteous', 'Righteous')">Righteous</div>
-<div class="option" style="font-family: 'verdana';" onclick="pilihFont('verdana', 'verdana')">verdana</div>
-<div class="option" style="font-family: 'Ramabhadra';" onclick="pilihFont('Ramabhadra', 'Ramabhadra')">Ramabhadra</div>
-<div class="option" style="font-family: 'Red Hat Display';" onclick="pilihFont('Red Hat Display', 'Red Hat Display')">Red Hat Display</div>
-<div class="option" style="font-family: 'Rajdhani';" onclick="pilihFont('Rajdhani', 'Rajdhani')">Rajdhani</div>
-<div class="option" style="font-family: 'Smooch Sans';" onclick="pilihFont('Smooch Sans', 'Smooch Sans')">Smooch Sans</div>
-<div class="option" style="font-family: 'Satisfy';" onclick="pilihFont('Satisfy', 'Satisfy')">Satisfy</div>
-<div class="option" style="font-family: 'Shadows Into Light';" onclick="pilihFont('Shadows Into Light', 'Shadows Into Light')">Shadows Into Light</div>
-<div class="option" style="font-family: 'Sacramento';" onclick="pilihFont('Sacramento', 'Sacramento')">Sacramento</div>
-<div class="option" style="font-family: 'PT Serif';" onclick="pilihFont('PT Serif', 'PT Serif')">PT Serif</div>
-<div class="option" style="font-family: 'Urbanist';" onclick="pilihFont('Urbanist', 'Urbanist')">Urbanist</div>
-<div class="option" style="font-family: 'Yellowtail';" onclick="pilihFont('Yellowtail', 'Yellowtail')">Yellowtail</div>
-    </div>
+    <div class="option" style="font-family: Arial;" onclick="pilihFont('Arial', 'Arial')">Arial</div>
+    <div class="option" style="font-family: 'Helvetica';" onclick="pilihFont('Helvetica', 'Helvetica')">Helvetica</div>
+    <div class="option" style="font-family: 'Verdana';" onclick="pilihFont('Verdana', 'Verdana')">Verdana</div>
+    <div class="option" style="font-family: 'Georgia';" onclick="pilihFont('Georgia', 'Georgia')">Georgia</div>
+    <div class="option" style="font-family: 'Courier New';" onclick="pilihFont('Courier New', 'Courier New')">Courier New</div>
+
+    <div class="option" style="font-family: 'Anton';" onclick="pilihFont('Anton', 'Anton')">Anton</div>
+    <div class="option" style="font-family: 'Alfa Slab One';" onclick="pilihFont('Alfa Slab One', 'Alfa Slab One')">Alfa Slab One</div>
+    <div class="option" style="font-family: 'Bagel Fat One';" onclick="pilihFont('Bagel Fat One', 'Bagel Fat One')">Bagel Fat One</div>
+    <div class="option" style="font-family: 'Bebas Neue';" onclick="pilihFont('Bebas Neue', 'Bebas Neue')">Bebas Neue</div>
+    <div class="option" style="font-family: 'Fjalla One';" onclick="pilihFont('Fjalla One', 'Fjalla One')">Fjalla One</div>
+    <div class="option" style="font-family: 'Changa One';" onclick="pilihFont('Changa One', 'Changa One')">Changa One</div>
+    <div class="option" style="font-family: 'Righteous';" onclick="pilihFont('Righteous', 'Righteous')">Righteous</div>
+
+    <div class="option" style="font-family: 'Allura';" onclick="pilihFont('Allura', 'Allura')">Allura</div>
+    <div class="option" style="font-family: 'Dancing Script';" onclick="pilihFont('Dancing Script', 'Dancing Script')">Dancing Script</div>
+    <div class="option" style="font-family: 'Great Vibes';" onclick="pilihFont('Great Vibes', 'Great Vibes')">Great Vibes</div>
+    <div class="option" style="font-family: 'Pacifico';" onclick="pilihFont('Pacifico', 'Pacifico')">Pacifico</div>
+    <div class="option" style="font-family: 'Satisfy';" onclick="pilihFont('Satisfy', 'Satisfy')">Satisfy</div>
+    <div class="option" style="font-family: 'Parisienne';" onclick="pilihFont('Parisienne', 'Parisienne')">Parisienne</div>
+    <div class="option" style="font-family: 'Sacramento';" onclick="pilihFont('Sacramento', 'Sacramento')">Sacramento</div>
+    <div class="option" style="font-family: 'Yellowtail';" onclick="pilihFont('Yellowtail', 'Yellowtail')">Yellowtail</div>
+    <div class="option" style="font-family: 'Courgette';" onclick="pilihFont('Courgette', 'Courgette')">Courgette</div>
+
+    <div class="option" style="font-family: 'Audiowide';" onclick="pilihFont('Audiowide', 'Audiowide')">Audiowide</div>
+    <div class="option" style="font-family: 'Orbitron';" onclick="pilihFont('Orbitron', 'Orbitron')">Orbitron</div>
+    <div class="option" style="font-family: 'Rajdhani';" onclick="pilihFont('Rajdhani', 'Rajdhani')">Rajdhani</div>
+    <div class="option" style="font-family: 'Goldman';" onclick="pilihFont('Goldman', 'Goldman')">Goldman</div>
+    <div class="option" style="font-family: 'Exo 2';" onclick="pilihFont('Exo 2', 'Exo 2')">Exo 2</div>
+
+    <div class="option" style="font-family: 'Caveat';" onclick="pilihFont('Caveat', 'Caveat')">Caveat</div>
+    <div class="option" style="font-family: 'Indie Flower';" onclick="pilihFont('Indie Flower', 'Indie Flower')">Indie Flower</div>
+    <div class="option" style="font-family: 'Shadows Into Light';" onclick="pilihFont('Shadows Into Light', 'Shadows Into Light')">Shadows Into Light</div>
+    <div class="option" style="font-family: 'Lobster';" onclick="pilihFont('Lobster', 'Lobster')">Lobster</div>
+    <div class="option" style="font-family: 'Lobster Two';" onclick="pilihFont('Lobster Two', 'Lobster Two')">Lobster Two</div>
+
+    <div class="option" style="font-family: 'Outfit';" onclick="pilihFont('Outfit', 'Outfit')">Outfit</div>
+    <div class="option" style="font-family: 'Quicksand';" onclick="pilihFont('Quicksand', 'Quicksand')">Quicksand</div>
+    <div class="option" style="font-family: 'Montserrat Alternates';" onclick="pilihFont('Montserrat Alternates', 'Montserrat Alternates')">Montserrat Alternates</div>
+    <div class="option" style="font-family: 'Urbanist';" onclick="pilihFont('Urbanist', 'Urbanist')">Urbanist</div>
+    <div class="option" style="font-family: 'Questrial';" onclick="pilihFont('Questrial', 'Questrial')">Questrial</div>
+    <div class="option" style="font-family: 'Red Hat Display';" onclick="pilihFont('Red Hat Display', 'Red Hat Display')">Red Hat Display</div>
+    <div class="option" style="font-family: 'Smooch Sans';" onclick="pilihFont('Smooch Sans', 'Smooch Sans')">Smooch Sans</div>
+    <div class="option" style="font-family: 'Ramabhadra';" onclick="pilihFont('Ramabhadra', 'Ramabhadra')">Ramabhadra</div>
+</div>
 </div>
       <div id="but-close" style="display:none;">"Mencoret"</div>
         <div style="display: flex; align-items: center; gap: 5px;">
@@ -377,7 +384,7 @@ div#kontrol-pintar {
     </div>
      
      
-     <button onclick="toggEmot()" style="background: #3498db; color:black; border: none; padding: 5px 8px; border-radius: 5px; cursor: pointer;font-size: 15px;">♞</button><button id="bukaFile" onclick="bukainfile()" style="padding: 5px;">File</button>
+     <button onclick="toggEmot()" style="background: #3498db; color:black; border: none; padding: 5px 8px; border-radius: 5px; cursor: pointer;font-size: 15px;">♞</button><button id="bukaFile" onclick="bukainfile()" style="padding: 5px;">Save</button>
 <div id="panelBentuk" class="bukatutup">
     <div class="menu-bentuk" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
         <button onclick="tambahBentuk('kotak')" title="Tambah Kotak" style="width: 40px; height: 40px;"><i class="fas fa-square"></i></button>
@@ -391,14 +398,14 @@ div#kontrol-pintar {
         </div>
     </div>
 </div>
-<div id="menuFile" style="display:none; position: absolute; z-index: 9; text-align: center; border: 1px solid #0000002b; padding: 10px; background: white; top: 50px;">
-  <button onclick="downloadPDF()" style=" position:relative;background: #27ae60; color: white; padding: 5px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight:">
-                Save
-            </button>
+<div id="menuFile" style="display: none;position: absolute;z-index: 9;text-align: center;border: 1px solid rgba(0, 0, 0, 0.17);padding: 15px;background: white;top: 50px;width: 150px;">
+  
     <button onclick="simpanPNG()"><i class="fas fa-image"></i> Simpan PNG</button>
+  <button onclick="downloadPDF()"><i aria-hidden="true" class="fa fa-file-pdf-o"></i> Simpan pdf</button>
+  <hr style="margin: 10px; border: 2px solid;">
     <button onclick="simpanDraft()" title="Simpan Sementara" style="padding: 5px; margin-bottom: 10px;">
         <i class="fas fa-save"></i> Simpan Draft
-    </button><br>
+    </button>
     <button onclick="muatDraft()" title="Buka Draft Terakhir" style="padding: 5px;">
         <i class="fas fa-folder-open"></i> Buka Draft
     </button>
@@ -1412,37 +1419,80 @@ function buatPenggaris() {
 
 // Panggil fungsi ini pas halaman dibuka
 window.onload = buatPenggaris;
+    
+// --- JURUS PASTE CTR+V ---
+window.addEventListener('paste', function (e) {
+    // 1. Ambil data dari Clipboard
+    const clipboardData = e.clipboardData || window.clipboardData;
+    
+    // --- JALUR TEKS ---
+    const teksPaste = clipboardData.getData('text');
+    if (teksPaste && teksPaste.trim() !== "") {
+        // Kalau yang di-paste itu teks, langsung bikin teks baru
+        tambahTeksOtomatis(teksPaste);
+        return; // Berhenti di sini, jangan lanjut ke gambar
+    }
 
-// --- JURUS PASTE GAMBAR LANGSUNG ---
-document.addEventListener('paste', function (e) {
-    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-
+    // --- JALUR GAMBAR ---
+    const items = clipboardData.items;
     for (let index in items) {
         const item = items[index];
         if (item.kind === 'file' && item.type.includes('image')) {
             const blob = item.getAsFile();
             const reader = new FileReader();
-
-            reader.onload = function (event) {
-                // Begitu gambar terbaca, kita lempar ke Modal Cropper
-                // Biar tetep bisa dipotong/dibersihin dulu sebelum masuk kanvas
-                document.getElementById('modalCropper').style.display = 'flex';
+            
+            reader.onload = function(event) {
+                const modal = document.getElementById('modalCropper');
                 const imageTemp = document.getElementById('imageTemp');
+                
+                modal.style.display = 'flex';
                 imageTemp.src = event.target.result;
 
-                // Reset Cropper kalau ada yang lama
-                if (cropper) cropper.destroy();
-                cropper = new Cropper(imageTemp, {
-                    viewMode: 1,
-                    autoCropArea: 1,
-                    checkOrientation: false
-                });
+                imageTemp.onload = function() {
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(imageTemp, {
+                        viewMode: 1,
+                        autoCropArea: 1,
+                        checkOrientation: false
+                    });
+                };
             };
             reader.readAsDataURL(blob);
         }
     }
 });
+
+// Fungsi pembantu buat bikin teks hasil paste
+function tambahTeksOtomatis(isiTeks) {
+    const canvas = document.getElementById('canvas-editor');
+    const fontTerpilihCss = window.getComputedStyle(document.getElementById('font-terpilih')).fontFamily;
+
+    const teksBaru = document.createElement('div');
+    teksBaru.className = "teks-item";
+    teksBaru.innerText = isiTeks;
     
+    // Settingan standar biar langsung keliatan
+    teksBaru.style.position = "absolute";
+    teksBaru.style.top = "100px";
+    teksBaru.style.left = "100px";
+    teksBaru.style.fontSize = "40px";
+    teksBaru.style.fontFamily = fontTerpilihCss; 
+    teksBaru.style.color = "black";
+    teksBaru.style.whiteSpace = "nowrap";
+    teksBaru.style.userSelect = "none";
+    teksBaru.style.cursor = "move";
+
+    canvas.appendChild(teksBaru);
+    
+    // Biar langsung bisa digeser & digembok
+    bikinBisaDigeser(teksBaru);
+    aktifkanFiturPilihGroup(teksBaru);
+    
+    // Langsung jadikan elemen terpilih biar bisa diedit
+    elemenTerpilih = teksBaru;
+    document.getElementById('kontrol-pintar').style.display = 'flex';
+}
+  
 document.addEventListener('keydown', function(e) {
     if (e.key === "Delete" || e.key === "Backspace") {
         // Hanya hapus kalau lagi nggak ngetik di input teks
