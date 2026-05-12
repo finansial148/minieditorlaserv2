@@ -1519,5 +1519,14 @@ document.addEventListener('keydown', function(e) {
 if(document.getElementById("logo-geser")) bikinBisaDigeser(document.getElementById("logo-geser"));
     
 </script>
+	<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('MEL v2 Siap Offline!', reg))
+        .catch(err => console.log('Gagal Offline:', err));
+    });
+  }
+</script>
  </body>
 </html>
