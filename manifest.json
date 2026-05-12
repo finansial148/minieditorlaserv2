@@ -1,8 +1,8 @@
 {
   "name": "mini editor laser v2",
   "short_name": "MEL",
-  "scope": "/minieditorlaserv2/",
-  "start_url": "/minieditorlaserv2/index.html",
+  "scope": "https://finansial148.github.io/minieditorlaserv2/",
+  "start_url": "https://finansial148.github.io/minieditorlaserv2/index.html",
   "display": "standalone",
   "background_color": "#c3c3c3",
   "theme_color": "#c3c3c3",
