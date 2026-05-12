@@ -1413,22 +1413,16 @@ function buatPenggaris() {
 // Panggil fungsi ini pas halaman dibuka
 window.onload = buatPenggaris;
 
-// --- JURUS PASTE GAMBAR V2 (ANTI MACET) ---
-window.addEventListener('paste', function (e) {
-    // 1. Cek apakah ada data di clipboard
-    const clipboardData = e.clipboardData || window.clipboardData;
-    if (!clipboardData) return;
-
-    const items = clipboardData.items;
-
-    for (let i = 0; i < items.length; i++) {
-        // 2. Kita cuma cari yang tipenya Image
-        if (items[i].type.indexOf("image") !== -1) {
-            const blob = items[i].getAsFile();
+// --- JURUS PASTE VERSI AGRESIF (ANTI GAGAL) ---
+const tangkapPaste = async (e) => {
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    
+    for (let item of items) {
+        if (item.type.indexOf("image") !== -1) {
+            const blob = item.getAsFile();
             const reader = new FileReader();
-
-            reader.onload = function (event) {
-                // 3. Langsung lempar ke modal Cropper
+            
+            reader.onload = (event) => {
                 const modal = document.getElementById('modalCropper');
                 const imageTemp = document.getElementById('imageTemp');
                 
@@ -1436,22 +1430,26 @@ window.addEventListener('paste', function (e) {
                     modal.style.display = 'flex';
                     imageTemp.src = event.target.result;
 
-                    // 4. Inisialisasi ulang Cropper
-                    if (window.cropper) window.cropper.destroy();
-                    window.cropper = new Cropper(imageTemp, {
-                        viewMode: 1,
-                        autoCropArea: 1,
-                        checkOrientation: false
-                    });
+                    // Tunggu gambar loading bentar baru aktifin cropper
+                    imageTemp.onload = () => {
+                        if (window.cropper) window.cropper.destroy();
+                        window.cropper = new Cropper(imageTemp, {
+                            viewMode: 1,
+                            autoCropArea: 1,
+                            checkOrientation: false
+                        });
+                    };
                 }
             };
             reader.readAsDataURL(blob);
-            
-            // Berhenti di sini kalau udah nemu gambar
-            break; 
+            break; // Stop kalau udah dapet gambar
         }
     }
-}, false);
+};
+
+// Pasang di window biar nangkep dari mana aja
+window.removeEventListener('paste', tangkapPaste); // Bersihin yang lama
+window.addEventListener('paste', tangkapPaste);
     
 document.addEventListener('keydown', function(e) {
     if (e.key === "Delete" || e.key === "Backspace") {
