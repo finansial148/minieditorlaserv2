@@ -2,7 +2,6 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
     <title>minieditor laser v2</title>
     <style>
       html, body {
@@ -279,8 +278,6 @@ div#kontrol-pintar {
             <i class="fas fa-image"></i>
         </label>
         <input type="file" id="upload-logo" accept="image/*" onchange="loadLogo(event)" style="display:none;">
-
-        <!--<input type="text" id="input-teks-baru" placeholder="Ketik nama...">-->
       <textarea type="text" id="input-teks-baru" placeholder="Ketik nama..."></textarea>
         <button onclick="tambahTeksBaru()" style="border:none; background:none; padding:0;">
             <i class="fas fa-plus-circle" style="color: #27ae60; font-size: 22px;"></i>
@@ -391,6 +388,10 @@ div#kontrol-pintar {
     </div>
 </div>
 <div id="menuFile" style="display:none; position: absolute; z-index: 9; text-align: center; border: 1px solid #0000002b; padding: 10px; background: white; top: 50px;">
+  <button onclick="downloadPDF()" style=" position:relative;background: #27ae60; color: white; padding: 5px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight:">
+                Save
+            </button>
+    <button onclick="simpanPNG()"><i class="fas fa-image"></i> Simpan PNG</button>
     <button onclick="simpanDraft()" title="Simpan Sementara" style="padding: 5px; margin-bottom: 10px;">
         <i class="fas fa-save"></i> Simpan Draft
     </button><br>
@@ -406,12 +407,12 @@ div#kontrol-pintar {
 
         <div style="flex: 2; min-width: 300px;">
             <div id="canvas-editor">
-              <div id="wrapper-kanvas" style="position: relative; display: inline-block; padding-top: 25px; padding-left: 25px;">
-    <div id="ruler-atas" style="position: absolute; top: 0; left: 25px; right: 0; height: 20px; display: flex; border-bottom: 1px solid #3498db; overflow: hidden;"></div>
+              <div id="wrapper-kanvas" style="position: relative; display: inline-block; padding-top:0px; padding-left:0px;">
+    <div id="ruler-atas" style="/*position: absolute;*/ top: 0; left: 25px; right: 0; height: 20px; display: flex; border-bottom: 1px solid #3498db; overflow: hidden;"></div>
     
-    <div id="ruler-samping" style="position: absolute; top: 25px; left: 0; bottom: 0; width: 20px; border-right: 1px solid #3498db; overflow: hidden;"></div>
+    <div id="ruler-samping" style="/*position: absolute;*/ top: 25px; left: 0; bottom: 0; width: 20px; border-right: 1px solid #3498db; overflow: hidden;"></div>
 
-    <canvas id="layer-coret" width="300" height="400" style="background: white; border: 1px solid #ccc;"></canvas>
+    <canvas id="layer-coret" style="position: absolute; top: 0; left: 0; z-index: 5; pointer-events: none;" width="1122" height="450"></canvas>
 </div>
                 <img id="logo-geser" src="" draggable="false" style="display: none; position: absolute; cursor: move; width: 150px; top: 20px; left: 20px; user-select: none;">
                 <div id="teks-geser" draggable="false" style="position: absolute; cursor: move; top: 200px; left: 20px; font-size: 40px; color: black; white-space: nowrap; user-select: none; font-family: Arial;">
@@ -1241,58 +1242,58 @@ function cariKeGoogle() {
 // 6. DOWNLOAD PDF (BAGIAN YANG TADI ERROR)
 async function downloadPDF() {
     const { jsPDF } = window.jspdf;
-    const area = document.getElementById('canvas-editor');
+    
+    // 1. Ambil wadah paling luar (yang membungkus penggaris dan semua canvas)
+    const area = document.getElementById('canvas-editor'); 
+    
+    const rulerA = document.getElementById('ruler-atas');
+    const rulerS = document.getElementById('ruler-samping');
     const inputNama = document.getElementById('input-teks-baru').value;
     const namaFile = inputNama || "desain-laser";
 
-    // --- JURUS PEMBERSIH SEBELUM DOWNLOAD ---
-    
-    // 1. Simpan dulu background penggarisnya ke variabel sementara
+    // --- JURUS PEMBERSIH ---
     const backgroundAsli = area.style.backgroundImage;
-    const backgroundSizeAsli = area.style.backgroundSize;
+    
+    // Sembunyikan Penggaris (Visibility hidden biar layout gak geser)
+    if(rulerA) rulerA.style.visibility = "hidden";
+    if(rulerS) rulerS.style.visibility = "hidden";
 
-    // 2. Hapus background dikanvas biar jadi putih polos
+    // Bersihkan background area kerja
     area.style.backgroundImage = "none";
     area.style.backgroundColor = "#ffffff";
 
-    // 3. Hilangkan outline biru/tanda pilih pada teks atau logo
+    // Hilangkan outline biru pada teks/logo
     document.querySelectorAll('.teks-item, #logo-geser').forEach(el => {
         el.style.outline = "none";
     });
 
-    // 4. Proses ambil foto area kerja (Scale 3 biar tajam buat laser)
+    // --- PROSES FOTO ---
+    // Kita potret 'area' (canvas-editor) secara utuh
     const canvas = await html2canvas(area, { 
         scale: 3, 
         backgroundColor: "#ffffff",
-        useCORS: true // Tambahkan ini biar gambar logo gak hilang di PDF
+        useCORS: true,
+        // Ini kuncinya Bang, supaya dia gak meleset motretnya
+        logging: false,
+        allowTaint: true
     });
     
     const imgData = canvas.toDataURL('image/png');
 
-    // --- KEMBALIKAN TAMPILAN SETELAH DIFOTO ---
-    
-    // Munculkan lagi penggaris centimeter-nya
+    // --- KEMBALIKAN TAMPILAN ---
     area.style.backgroundImage = backgroundAsli;
-    area.style.backgroundSize = backgroundSizeAsli;
+    if(rulerA) rulerA.style.visibility = "visible";
+    if(rulerS) rulerS.style.visibility = "visible";
 
-    // --- PROSES PEMBUATAN PDF (A4 Landscape) ---
+    // --- PROSES KE PDF (A4 Landscape) ---
     const pdf = new jsPDF('l', 'cm', 'a4');
     const lebarKertas = 29.7;
     const tinggiKertas = 21.0;
     const margin = 1;
 
-    const lebarAsli = area.offsetWidth;
-    const tinggiAsli = area.offsetHeight;
-    const rasioCanvas = lebarAsli / tinggiAsli;
-
-    let lebarFinal, tinggiFinal;
-    if (rasioCanvas > (lebarKertas / tinggiKertas)) {
-        lebarFinal = lebarKertas - (margin * 2);
-        tinggiFinal = lebarFinal / rasioCanvas;
-    } else {
-        tinggiFinal = tinggiKertas - (margin * 2);
-        lebarFinal = tinggiFinal * rasioCanvas;
-    }
+    const lebarFinal = lebarKertas - (margin * 2);
+    // Hitung tinggi otomatis berdasarkan hasil foto
+    const tinggiFinal = (canvas.height / canvas.width) * lebarFinal;
 
     const x = (lebarKertas - lebarFinal) / 2;
     const y = (tinggiKertas - tinggiFinal) / 2;
@@ -1300,6 +1301,37 @@ async function downloadPDF() {
     pdf.addImage(imgData, 'PNG', x, y, lebarFinal, tinggiFinal);
     pdf.save(`Orderan-${namaFile}.pdf`);
 }
+    
+// SIMPAN PNG    
+async function simpanPNG() {
+    const area = document.getElementById('canvas-editor');
+    const inputNama = document.getElementById('input-teks-baru').value;
+    const namaFile = inputNama || "preview-desain";
+    const rulerA = document.getElementById('ruler-atas');
+    const rulerS = document.getElementById('ruler-samping');
+
+    // --- BERSIHKAN ---
+    const backgroundAsli = area.style.backgroundImage;
+    area.style.backgroundImage = "none";
+    if(rulerA) rulerA.style.display = "none";
+    if(rulerS) rulerS.style.display = "none";
+    document.querySelectorAll('.teks-item, #logo-geser').forEach(el => el.style.outline = "none");
+
+    // --- PROSES JADI GAMBAR ---
+    const canvas = await html2canvas(area, { scale: 3, backgroundColor: "#ffffff" });
+    const link = document.createElement('a');
+    link.download = `Preview-${namaFile}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+    // --- BALIKIN LAGI ---
+    area.style.backgroundImage = backgroundAsli;
+    if(rulerA) rulerA.style.display = "flex";
+    if(rulerS) rulerS.style.display = "block";
+    
+    tampilModal("Selesai!", "Gambar PNG sudah masuk ke folder Download.", "peringatan");
+}    
+    
 //PENGGARIS-------
 function buatPenggaris() {
     const canvas = document.getElementById('layer-coret');
