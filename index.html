@@ -257,6 +257,10 @@ div#kontrol-pintar {
 }
       .tGbrco{width: 100px;margin: auto;margin-top: 0;margin-bottom: 0;font-weight:bold;background: #00ffdc;border: 1px solid #00000059;border-radius: 5px;padding:5px;cursor: pointer;}
       .tGbrtup{display:none;}
+      .group-aktif {
+    outline: 2px dashed #f1c40f !important; /* Kuning cerah biar keliatan */
+    outline-offset: 5px;
+}
           </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
@@ -547,7 +551,8 @@ function eksekusiPotong() {
         const logo = document.getElementById('logo-geser');
         logo.src = hasilGambarURL;
         logo.style.display = "block";
-        
+        aktifkanFiturPilihGroup(logo);
+      
         elemenTerpilih = logo;
         
         // Coba munculkan kontrol, kalau error jangan bikin macet
@@ -568,7 +573,7 @@ function eksekusiPotong() {
       document.getElementById('modalCropper').style.display = 'none';
     }
   // RESET INPUT FILE (Supaya bisa masukin gambar yang sama lagi)
-    document.getElementById('upload-logo').value = ""; 
+    document.getElementById('upload-logo').value = "";
     
     if (cropper) {
         cropper.destroy();
@@ -580,7 +585,7 @@ function tutupGbr() {
 document.getElementById('modalCropper').style.display = 'none';
   
   // RESET INPUT FILE (Supaya bisa masukin gambar yang sama lagi)
-    document.getElementById('upload-logo').value = ""; 
+    document.getElementById('upload-logo').value = "";
     
     if (cropper) {
         cropper.destroy();
@@ -596,13 +601,12 @@ function tambahTeksBaru() {
     const canvas = document.getElementById('canvas-editor');
     
     // AMBIL FONT DARI SISTEM BARU
-    // Kita ambil font-family langsung dari style si penampung teks di dropdown palsu
     const fontTerpilihCss = window.getComputedStyle(document.getElementById('font-terpilih')).fontFamily;
 
     if (isiTeks.trim() === "") {
-    tampilModal("Waduh, Kosong!", "Ketik tulisannya dulu, Bang! Biar mesinnya tahu mau nembak apa.", "peringatan");
-    return;
-}
+        tampilModal("Waduh, Kosong!", "Ketik tulisannya dulu, Bang! Biar mesinnya tahu mau nembak apa.", "peringatan");
+        return;
+    }
 
     const teksBaru = document.createElement('div');
     teksBaru.className = "teks-item";
@@ -613,18 +617,23 @@ function tambahTeksBaru() {
     teksBaru.style.top = "50px";
     teksBaru.style.left = "50px";
     teksBaru.style.fontSize = "40px";
-    teksBaru.style.fontFamily = fontTerpilihCss; // Pakai font yang lagi aktif
+    teksBaru.style.fontFamily = fontTerpilihCss; 
     teksBaru.style.color = "black";
     teksBaru.style.whiteSpace = "nowrap";
     teksBaru.style.userSelect = "none";
 
     canvas.appendChild(teksBaru);
-    bikinBisaDigeser(teksBaru);
 
+    // --- KESAKTIAN BARU DI SINI ---
+    bikinBisaDigeser(teksBaru); // Biar bisa digeser sendiri
+    aktifkanFiturPilihGroup(teksBaru); // Biar bisa dipilih buat gembok kelompok
+
+  
     inputAn.value = ""; 
     elemenTerpilih = teksBaru;
     document.getElementById('kontrol-pintar').style.display = 'flex';
     document.getElementById('emotik').style.display = 'none';
+ 
 }
 
 // 3. Fungsi Ukuran & Rotasi
@@ -840,15 +849,29 @@ function bikinBisaDigeser(elemen) {
 }
 
     function prosesGeser(e) {
-        let clientX = (e.type === 'touchmove') ? e.touches[0].clientX : e.clientX;
-        let clientY = (e.type === 'touchmove') ? e.touches[0].clientY : e.clientY;
-        pos1 = pos3 - clientX;
-        pos2 = pos4 - clientY;
-        pos3 = clientX;
-        pos4 = clientY;
-        elemen.style.top = (elemen.offsetTop - pos2) + "px";
-        elemen.style.left = (elemen.offsetLeft - pos1) + "px";
+    let clientX = (e.type === 'touchmove') ? e.touches[0].clientX : e.clientX;
+    let clientY = (e.type === 'touchmove') ? e.touches[0].clientY : e.clientY;
+    
+    pos1 = pos3 - clientX;
+    pos2 = pos4 - clientY;
+    pos3 = clientX;
+    pos4 = clientY;
+
+    // 1. Geser elemen utama yang sedang disentuh
+    elemen.style.top = (elemen.offsetTop - pos2) + "px";
+    elemen.style.left = (elemen.offsetLeft - pos1) + "px";
+
+    // 2. LOGIKA GEMBOK: Geser temen-temennya kalau sedang di-group
+    if (elemen.classList.contains('group-aktif')) {
+        const semuaTemen = document.querySelectorAll('.group-aktif');
+        semuaTemen.forEach(temen => {
+            if (temen !== elemen) { // Jangan geser elemen utama dua kali
+                temen.style.top = (temen.offsetTop - pos2) + "px";
+                temen.style.left = (temen.offsetLeft - pos1) + "px";
+            }
+        });
     }
+}
 
     function berhentiGeser() {
         document.onmouseup = null;
@@ -857,6 +880,23 @@ function bikinBisaDigeser(elemen) {
         document.ontouchmove = null;
     }
 }
+    
+// Gunakan Tekan Lama (Long Press) atau Klik Kanan biar enak di HP
+function aktifkanFiturPilihGroup(el) {
+    el.addEventListener('contextmenu', function(e) {
+        e.preventDefault(); // Biar gak muncul menu asli HP/Browser
+        
+        this.classList.toggle('group-aktif');
+        
+        // Kasih tanda biar Abang tau mana yang kegembok
+        if (this.classList.contains('group-aktif')) {
+            this.style.outline = "2px dashed #f1c40f"; // Warna kuning gembok
+        } else {
+            this.style.outline = "none";
+        }
+    });
+}
+
 
 // 5. Fungsi Kontrol
 function toggleDropdown() {
@@ -925,12 +965,13 @@ function duplikatElemen() {
         document.getElementById('canvas-editor').appendChild(clone);
         
         // 4. PENTING: Kasih fungsi biar si anak baru ini bisa diklik & digeser
-        bikinBisaDigeser(clone); 
+        bikinBisaDigeser(clone);
+        aktifkanFiturPilihGroup(clone);
         
         // 5. Otomatis pilih elemen yang baru diduplikat tadi
         elemenTerpilih = clone;        
     }
-}  
+}
     
 // Tutup dropdown kalau klik di luar
 window.onclick = function(event) {
@@ -1372,6 +1413,57 @@ function buatPenggaris() {
 // Panggil fungsi ini pas halaman dibuka
 window.onload = buatPenggaris;
 
+// --- JURUS PASTE GAMBAR V2 (ANTI MACET) ---
+window.addEventListener('paste', function (e) {
+    // 1. Cek apakah ada data di clipboard
+    const clipboardData = e.clipboardData || window.clipboardData;
+    if (!clipboardData) return;
+
+    const items = clipboardData.items;
+
+    for (let i = 0; i < items.length; i++) {
+        // 2. Kita cuma cari yang tipenya Image
+        if (items[i].type.indexOf("image") !== -1) {
+            const blob = items[i].getAsFile();
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                // 3. Langsung lempar ke modal Cropper
+                const modal = document.getElementById('modalCropper');
+                const imageTemp = document.getElementById('imageTemp');
+                
+                if (modal && imageTemp) {
+                    modal.style.display = 'flex';
+                    imageTemp.src = event.target.result;
+
+                    // 4. Inisialisasi ulang Cropper
+                    if (window.cropper) window.cropper.destroy();
+                    window.cropper = new Cropper(imageTemp, {
+                        viewMode: 1,
+                        autoCropArea: 1,
+                        checkOrientation: false
+                    });
+                }
+            };
+            reader.readAsDataURL(blob);
+            
+            // Berhenti di sini kalau udah nemu gambar
+            break; 
+        }
+    }
+}, false);
+    
+document.addEventListener('keydown', function(e) {
+    if (e.key === "Delete" || e.key === "Backspace") {
+        // Hanya hapus kalau lagi nggak ngetik di input teks
+        if (document.activeElement.tagName !== "INPUT") {
+            if (elemenTerpilih && elemenTerpilih.id !== 'canvas-editor') {
+                elemenTerpilih.remove();
+                document.getElementById('kontrol-pintar').style.display = 'none';
+            }
+        }
+    }
+});
 	  
 // Inisialisasi awal geser buat logo lama kalau ada
 if(document.getElementById("logo-geser")) bikinBisaDigeser(document.getElementById("logo-geser"));
