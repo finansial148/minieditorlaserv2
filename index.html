@@ -1413,43 +1413,35 @@ function buatPenggaris() {
 // Panggil fungsi ini pas halaman dibuka
 window.onload = buatPenggaris;
 
-// --- JURUS PASTE VERSI AGRESIF (ANTI GAGAL) ---
-const tangkapPaste = async (e) => {
+// --- JURUS PASTE GAMBAR LANGSUNG ---
+document.addEventListener('paste', function (e) {
     const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-    
-    for (let item of items) {
-        if (item.type.indexOf("image") !== -1) {
+
+    for (let index in items) {
+        const item = items[index];
+        if (item.kind === 'file' && item.type.includes('image')) {
             const blob = item.getAsFile();
             const reader = new FileReader();
-            
-            reader.onload = (event) => {
-                const modal = document.getElementById('modalCropper');
-                const imageTemp = document.getElementById('imageTemp');
-                
-                if (modal && imageTemp) {
-                    modal.style.display = 'flex';
-                    imageTemp.src = event.target.result;
 
-                    // Tunggu gambar loading bentar baru aktifin cropper
-                    imageTemp.onload = () => {
-                        if (window.cropper) window.cropper.destroy();
-                        window.cropper = new Cropper(imageTemp, {
-                            viewMode: 1,
-                            autoCropArea: 1,
-                            checkOrientation: false
-                        });
-                    };
-                }
+            reader.onload = function (event) {
+                // Begitu gambar terbaca, kita lempar ke Modal Cropper
+                // Biar tetep bisa dipotong/dibersihin dulu sebelum masuk kanvas
+                document.getElementById('modalCropper').style.display = 'flex';
+                const imageTemp = document.getElementById('imageTemp');
+                imageTemp.src = event.target.result;
+
+                // Reset Cropper kalau ada yang lama
+                if (cropper) cropper.destroy();
+                cropper = new Cropper(imageTemp, {
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    checkOrientation: false
+                });
             };
             reader.readAsDataURL(blob);
-            break; // Stop kalau udah dapet gambar
         }
     }
-};
-
-// Pasang di window biar nangkep dari mana aja
-window.removeEventListener('paste', tangkapPaste); // Bersihin yang lama
-window.addEventListener('paste', tangkapPaste);
+});
     
 document.addEventListener('keydown', function(e) {
     if (e.key === "Delete" || e.key === "Backspace") {
