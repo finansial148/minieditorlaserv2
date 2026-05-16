@@ -16,6 +16,7 @@
 <meta content='#c3c3c3' name='apple-mobile-web-app-status-bar-style'/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <title>minieditor laser v2</title>
     <style>
       html, body {
@@ -104,26 +105,32 @@ width: 150px;
     pointer-events: auto !important;
 }
   .menu-kontainer {
-    display: flex;
-    flex-wrap: wrap; /* Biar otomatis turun ke bawah di HP */
+    display: flex;max-width: 95%; /* Biar gak nempel pinggir layar HP */
+    margin: 5px auto;gap: 10px;
+    /*flex-wrap: wrap;   
     align-items: center;
-    justify-content: center;
-    gap: 10px;
+    justify-content: center;   
     padding: 15px;
     background: #ffffff;
     border-radius: 20px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    max-width: 95%; /* Biar gak nempel pinggir layar HP */
-    margin: 15px auto;
+    
+    
     border: 1px solid #eee;z-index: 9;
-    position: relative;
+    position: relative;*/
   }
-
-  .grup-utama {
+.menu-kontainer button {
+    border:0;background: none;
+    border-radius: 5px;
+    padding: 5px;cursor: pointer;pointer-events: auto !important;
+}
+ .menu-kontainer span {
     display: flex;
-    align-items: center;
-    gap: 5px;
-  }
+    font-size: 10px;
+    color: #000000a8;
+    width: 60px;
+    justify-content: center;
+}
 
   /* Garis pemisah cuma muncul di layar lebar */
   @media (min-width: 600px) {
@@ -135,7 +142,6 @@ width: 150px;
 
   /* Rapihin input teks biar manis */
   #input-teks-baru {
-    padding: 8px 12px;
     border-radius: 8px;
     border: 1px solid #ddd;
     outline: none;
@@ -146,15 +152,16 @@ width: 150px;
   #input-teks-baru:focus { border-color: #3498db; box-shadow: 0 0 5px rgba(52,152,219,0.3); }
 
   /* Ikon-ikon supaya seragam */
-  .menu-kontainer i { font-size: 18px; color: #555; cursor: pointer; transition: 0.2s; }
+  .menu-kontainer i { font-size: 18px; cursor: pointer; transition: 0.2s; }
   .menu-kontainer i:hover { color: #3498db; }
+  .menu-kontainer w:hover { color: #3498db; }
   .btn-hapus i { color: #e74c3c !important; }
   
   /* Slider biar gak kekecilan di jari */
   input[type=range] { width: 260px; cursor: pointer; }    
   
    div#opsi-font {
-        width: 170px;height: 350px;
+        width: 170px;height:200px;
     overflow: overlay;
 }
       
@@ -183,7 +190,6 @@ width: 150px;
 .bukatutup {
     max-height: 0; /* Awalnya sembunyi */
     overflow: hidden;
-    transition: max-height 0.3s ease-out, opacity 0.3s ease;
     opacity: 0;
     background: #f9f9f9;
     border-radius: 8px;
@@ -192,7 +198,7 @@ width: 150px;
 .bukatutup.buka {
     max-height: 200px;
     opacity: 1;
-    padding: 20px 5px;
+    padding:1px;
     border: 1px solid #ddd;
     margin-top: 5px;
     position: fixed;
@@ -248,15 +254,17 @@ width: 150px;
 }
 div#kontrol-pintar {
     position: fixed;
-    top: 0;
-    background: white;
-    border: 1px solid #0000005c;
-    padding: 5px 15px;
-    flex-direction: column;
-    height: 180px;
-    justify-content: space-between;
+    bottom: 17px;border: 1px solid #00000021;width: 74%;align-content: center;
+    align-items: center;
+    justify-content: space-around;background: #d6d6d6;padding: 5px;
 }
-      .menuk{border: 1px solid #0000008c; color: white; padding: 8px 5px; border-radius: 5px; cursor: pointer;}
+      div#kontrol-pintar button {
+    border: 1px solid #d6d6d6;
+    background: none;
+    font-weight: bold;
+        
+}
+      .menuk{border: 1px solid #0000008c; color: #000000; padding: 8px 5px; border-radius: 5px; cursor: pointer;}
       .menul {
     background: red;
 }
@@ -269,7 +277,15 @@ div#kontrol-pintar {
     text-align: center;
     color: #0000004d;
 }
-      .tGbrco{width: 100px;margin: auto;margin-top: 0;margin-bottom: 0;font-weight:bold;background: #00ffdc;border: 1px solid #00000059;border-radius: 5px;padding:5px;cursor: pointer;}
+
+      .tGbrco {
+    margin: auto;
+    margin-top: 0;
+    margin-bottom: 0;
+    width: 95px;text-align: right;
+    border-radius: 5px;background: none;
+    cursor: pointer;
+}
       .tGbrtup{display:none;}
       .group-aktif {
     outline: 2px dashed #f1c40f !important; /* Kuning cerah biar keliatan */
@@ -321,19 +337,21 @@ div#kontrol-pintar {
 .btn-fullscreen-sultan:active {
     opacity: 1; /* Terang lagi pas mau dipencet */
 }
-      #notif-instal {
+#notif-instal {
     display: none; /* Sembunyi dulu */
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    background: #2c3e50;
+    background: #2c3e50b8;
     color: white;
     padding: 15px;
     text-align: center;
     z-index: 10000;
     box-shadow: 0 2px 10px rgba(0,0,0,0.5);
     font-family: sans-serif;
+    transition: height 0.5s ease-in-out; /* Biar ada efek "turun" pelan-pelan */
+    overflow: hidden;
 }
 #notif-instal button {
     background: #e74c3c;
@@ -345,48 +363,123 @@ div#kontrol-pintar {
     cursor: pointer;
     font-weight: bold;
 }
+.kotak {
+    position: fixed;
+    bottom: 17px;
+    z-index: 9;
+    width: 80%;
+    border: 1px solid #00000017;
+    overflow: overlay;
+    background: #00000014;
+}
+.carigambar,.ketik,.SimpenanImg{
+    display: none;border: 1px solid #0000003b;
+    position: fixed;
+    bottom: 80px;
+    padding: 5px;
+    border-radius: 5px;
+    
+}
+      .editarget {
+    display: none;flex-direction: column;
+    border: 1px solid #0000003b;
+    position: fixed;
+    bottom: 80px;
+    padding: 5px;
+    border-radius: 5px;
+        right: 5px;background: #00000047}
+      i.fa.fa-window-close {
+    position: absolute;cursor: pointer;
+    margin-left: 5px;
+}
+      .editarget w {
+    font-size: 10px;
+}
+      div#nyoret {border: 1px solid #0000004f;padding: 2px 10px;background: #fff700;border-radius: 5px;position: fixed;z-index:9;bottom: 80px;
+}
+      .kotak-hori{border: 1px solid #00000047;padding: 3px;overflow: overlay;max-width: 320px;margin: auto;background: #d6d6d6;}
+      .kotak-hori button {
+    display: flex;cursor: pointer;
+    gap: 5px;
+}
+      .resizer {
+    width: 15px;
+    height: 15px;
+    background: #e74c3c5c; /* Warna merah biar keliatan */
+    position: absolute;
+    right: -7px;
+    bottom: -7px;
+    cursor: nwse-resize;
+    border-radius: 50%;
+    border: 2px solid white;
+    z-index: 10;
+}
+
           </style>
+  <style id="untukelas"></style>
+  <style id="canvas-Edit"></style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 </head>
 <body>
+  
   <div id="notif-instal">
-    <span>Biar ngeditnya makin "loncer", instal aplikasi MEL v2 di HP Abang yuk!</span>
     <button onclick="eksekusiInstal()">INSTAL SEKARANG</button>
     <button onclick="tutupNotif()" style="background:transparent; border:1px solid white;">NANTI AJA</button>
 </div>
-  <div style="position: fixed;top: 0;left: 0;z-index: 9;background: white;width: 100%;height: 100%;overflow: overlay;">
+  <div style="position: fixed;top: 0;left: 0;z-index: 9;background:#c3c3c3;width: 100%;height: 100%;overflow: overlay;">
   <div class="editor-keren" style="max-width: 800px; margin: auto; font-family: 'Segoe UI'">
-    <h2 style="text-align: center; color: #2c3e50;background: #c3c3c3;height: 50px;margin: 0;"> Mini Editor Laser v.2</h2>
-   <div class="menu-kontainer">
-     
+    <h2 style="text-align: center; color: #2c3e50;background: #c3c3c3;margin: 0;font-size: 15px;"> Mini Editor Laser v.2</h2>  
+    <div class="kotak">
+      <div class="menu-kontainer">
+        
+      <button onclick="tutupKolom('carigambar')"><i class="fas fa-globe" aria-hidden="true"></i><span>Cari gambar</span></button> 
+      <button onclick="tutupKolom('SimpenanImg')"><i class="fas fa-image"></i><span>Pilih gambar</span></button>
+      <button onclick="tutupKolom('ketik')"><i class="far fa-keyboard" aria-hidden="true"></i><span>Ketik</span></button>
+      <button  onclick="toggEmot()"><w>♞</w><span>Logo</span></button>
+      <button onclick="aktifkanCoret()"><i class="fa fa-paint-brush" aria-hidden="true"></i><span>Coret</span></button>
+      <button id="togMenuk" onclick="toggleMenu()" class="menuk"><i class="fas fa-shapes"></i><span>Garis</span></button>
+      <button  id="bukaFile" onclick="bukainfile()"><i class="fa fa-location-arrow" aria-hidden="true"></i><span>Save</span></button>
+      <button onclick="bukaModalKalkulator()">
+    <i class="fas fa-calculator"></i> <span>Cek Grafir</span>
+</button>
+     <div class="carigambar">
       <input type="text" id="inputTopik" placeholder="Ketik gambar...">
 <button onclick="cariKeGoogle()" style="padding: 0px 5px;font-weight:bold;cursor: pointer;">Cari</button>
-    <div class="grup-utama">
-        <label for="upload-logo" title="Upload Gambar">
-            <i class="fas fa-image"></i>
-        </label>
-        <input type="file" id="upload-logo" accept="image/*" onchange="loadLogo(event)" style="display:none;">
-      <textarea type="text" id="input-teks-baru" placeholder="Ketik nama..."></textarea>
-        <button onclick="tambahTeksBaru()" style="border:none; background:none; padding:0;">
-            <i class="fas fa-plus-circle" style="color: #27ae60; font-size: 22px;"></i>
-        </button>
+     </div>   <div onclick="tutpKolm()" class="SimpenanImg" style="align-items: center;
+    gap: 10px;">
+      <div id="galeri-user" style="display:flex; overflow-x:auto; gap:10px; margin-top:10px; background:#eee; padding:10px; border-radius:5px;">
+    <small style="color:gray;">Logo yang pernah dipake muncul di sini...</small>
+</div>
+         <button style="border:1px solid #00000047;background: white;"><label for="upload-logo" title="Upload Gambar"><i class="fas fa-mobile-alt"></i><span>Ambil digaleri</span></label><input type="file" id="upload-logo" accept="image/*" onchange="loadLogo(event)" style="display:none;"></button>
     </div>
-
+        
+      <div class="ketik">
+      <textarea type="text" id="input-teks-baru" placeholder="Ketik..."></textarea>
+        <button onclick="tambahTeksBaru()" style="border:none; background:none; padding:0;">
+            <i class="fas fa-plus-circle" style="color: #27ae60; font-size: 37px;"></i>
+        </button>
+      </div>
+<div id="pinterin" style="display:block;position:fixed;z-index:9;top:0;">
     <div id="kontrol-pintar" style="display: none;">
-      
+      <button onclick="tutupKolom('editarget')"><i aria-hidden="true" class="fa fa-cog"></i><span>Edit</span></button>
+      <button id="tombol-hapus" onclick="hapusElemen()" class="btn-hapus"><i class="fas fa-trash"></i><span>Hapus</span></button>
+        <button style="background: none;border: 0;"><i class="fa fa-window-close" aria-hidden="true" onclick="tutupGbr()" style="top: 5px;"></i></button>
+  </div>
+  <div id="nyoret" style="display:none;">
+        <button onclick="aktifkanCoret()" id="btn-pensil" title="Corat-coret"><i class="fa fa-paint-brush" aria-hidden="true"></i></button>
+        <button onclick="aktifkanPenghapus()" id="btn-penghapus" title="Penghapus per garis"><i class="fas fa-eraser"></i></button>
+        <button onclick="hapusCoretan()" title="Hapus Semua Coretan" style="color: #e74c3c;"><i class="fas fa-trash-alt"></i></button>
+      </div>
+  <div class="editarget"><i class="fa fa-window-close" aria-hidden="true" onclick="tutupGbr()" style="top: 5px;"></i>
 <div class="custom-select-wrapper">
     <div id="pilih-font-custom" class="select-box" onclick="toggleDropdown()">
         <span id="font-terpilih">Arial</span>
         <i class="fas fa-chevron-down"></i>
     </div>
-  <div style="display: flex;gap: 10px;border: 1px solid #0000004f;padding: 2px 10px;background: #fff700;border-radius: 5px;">
-        <button onclick="aktifkanCoret()" id="btn-pensil" title="Corat-coret"><i class="fa fa-paint-brush" aria-hidden="true"></i></button>
-        <button onclick="aktifkanPenghapus()" id="btn-penghapus" title="Penghapus per garis"><i class="fas fa-eraser"></i></button>
-        <button onclick="hapusCoretan()" title="Hapus Semua Coretan" style="color: #e74c3c;"><i class="fas fa-trash-alt"></i></button>
-      </div>
-    <div id="opsi-font" class="options-container">
+    
+  <div id="opsi-font" class="options-container">
     <div class="option" style="font-family: Arial;" onclick="pilihFont('Arial', 'Arial')">Arial</div>
     <div class="option" style="font-family: 'Helvetica';" onclick="pilihFont('Helvetica', 'Helvetica')">Helvetica</div>
     <div class="option" style="font-family: 'Verdana';" onclick="pilihFont('Verdana', 'Verdana')">Verdana</div>
@@ -432,41 +525,33 @@ div#kontrol-pintar {
     <div class="option" style="font-family: 'Smooch Sans';" onclick="pilihFont('Smooch Sans', 'Smooch Sans')">Smooch Sans</div>
     <div class="option" style="font-family: 'Ramabhadra';" onclick="pilihFont('Ramabhadra', 'Ramabhadra')">Ramabhadra</div>
 </div>
+  <button id="tGbrclos" class="tGbrco" style="border:0;"><i class="fa fa-window-close" aria-hidden="true" onclick="tutupGbr()" style="top: 0;"></i></button>
 </div>
       <div id="but-close" style="display:none;">"Mencoret"</div>
-        <div style="display: flex; align-items: center; gap: 5px;">
-            <i class="fas fa-text-height" style="font-size: 14px;"></i>
-    <span id="angka-Slid"  style="font-weight:bold;color:blue;border: 1px solid;width: 40px;text-align: center;">10</span>
-    <input type="range" id="slider-ukuran" min="10" max="400" value="30">
-       </div>
-
-        <div style="display: flex; align-items: center; gap: 5px;">
+         <div style="display: flex; align-items: center; gap: 5px;">
             <i class="fas fa-redo" style="font-size: 14px;"></i>
             <span id="angka-Rotasi" style="font-weight:bold;color:red;border: 1px solid;width: 40px;text-align: center;">0</span>
     <input type="range" id="slider-rotasi" min="-180" max="180" value="0">
         </div>
-      <div style="display: flex;gap: 10px;border: 1px solid #00000047;padding: 3px;">
-      <button type="button" onclick="flipHorizontal()" style="width: 30px;padding:0;font-weight: bold;font-size: 15px;display: flex;flex-direction: column;cursor: pointer;">⇔<w style="font-size: 10px;">Flip</w></button>
-      <button id="togMenuk" onclick="toggleMenu()" class="menuk">
-    <i class="fas fa-shapes"></i>
-</button>
-        <button onclick="tektebal()" id="btn-bold" title="Tebalkan Font"><b>B</b></button>
-        <button onclick="tekmiring()" id="btn-italic" title="Miringkan Font" style="font-style: italic; font-family: serif;">I</button>
-        <button onclick="duplikatElemen()" title="Duplikat Elemen"><i class="fas fa-copy"></i>Copy</button>
-        <button onclick="invertWarnaElemen()">Balik Warna</button>
-        <button onclick="toggleGrid()">Garis Bantu</button>
-        <button id="tombol-hapus" onclick="hapusElemen()" class="btn-hapus">
-            <i class="fas fa-trash"></i>
-        </button>
-        
-         
-      </div>
-      <button id="tGbrclos" onclick="tutupGbr()" class="tGbrco">Close</button>
+    <div style="display: flex; align-items: center; gap: 5px;">
+            <i class="fas fa-text-height" style="font-size: 14px;"></i>
+    <span id="angka-Slid"  style="font-weight:bold;color:blue;border: 1px solid;width: 40px;text-align: center;">10</span>
+    <input type="range" id="slider-ukuran" min="10" max="400" value="30">
+       </div>
+      <div class="kotak-hori" style="display: flex;gap: 5px;">
+      <button type="button" onclick="flipHorizontal()" style="cursor: pointer;"><i class="fa fa-exchange" aria-hidden="true"></i><w style="font-size: 10px;">Flip</w></button>
+        <button onclick="tektebal()" id="btn-bold" title="Tebalkan Font"><i class="fa fa-bold" aria-hidden="true"></i><w>Bold</w></button>
+        <button onclick="tekmiring()" id="btn-italic" title="Miringkan Font"><i class="fa fa-italic" aria-hidden="true"></i><w>italic</w></button>
+        <button onclick="duplikatElemen()" title="Duplikat Elemen"><i class="fas fa-copy"></i><w>Copy</w></button>
+        <button onclick="invertWarnaElemen()"><i class="fa fa-shield" aria-hidden="true"></i><w>Balik Warna</w></button>
+        <button onclick="toggleGrid()"><i class="fa fa-th" aria-hidden="true"></i><w>Garis Bantu</w></button>
+        <button onclick="dasarLayar('canvas-editor')"><i class="far fa-square" aria-hidden="true"></i><w>Layar putih</w></button>
+        <button onclick="aturLapis('depan')"><i class="fas fa-layer-group" ></i><i class="fas fa-arrow-up"></i><w>Kedepan</w></button>
+        <button onclick="aturLapis('belakang')"><i class="fas fa-layer-group"></i> <i class="fas fa-arrow-down"></i><w>Kebelakang</w></button>
+      </div>      
     </div>
-     
-     
-     <button onclick="toggEmot()" style="background: #3498db; color:black; border: none; padding: 5px 8px; border-radius: 5px; cursor: pointer;font-size: 15px;">♞</button><button id="bukaFile" onclick="bukainfile()" style="padding: 5px;">Save</button>
-<div id="panelBentuk" class="bukatutup">
+     </div>
+<div id="panelBentuk" class="bukatutup"><i class="fa fa-window-close" aria-hidden="true" onclick="toggleMenu()" style="position: relative;float: right;"></i>
     <div class="menu-bentuk" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
         <button onclick="tambahBentuk('kotak')" title="Tambah Kotak" style="width: 40px; height: 40px;"><i class="fas fa-square"></i></button>
         <button onclick="tambahBentuk('bundar')" title="Tambah Lingkaran" style="width: 40px; height: 40px;"><i class="fas fa-circle"></i></button>
@@ -479,7 +564,9 @@ div#kontrol-pintar {
         </div>
     </div>
 </div>
-<div id="menuFile" style="display: none;position: absolute;z-index: 9;text-align: center;border: 1px solid rgba(0, 0, 0, 0.17);padding: 15px;background: white;top: 50px;width: 150px;">
+</div>
+    </div>
+ <div id="menuFile" style="display: none;position: fixed;z-index: 9;text-align: center;border: 1px solid rgba(0, 0, 0, 0.17);padding: 15px;background: white;bottom: 5px;width: 150px;">
   
     <button onclick="simpanPNG()"><i class="fas fa-image"></i> Simpan PNG</button>
   <button onclick="downloadPDF()"><i aria-hidden="true" class="fa fa-file-pdf-o"></i> Simpan pdf</button>
@@ -490,15 +577,12 @@ div#kontrol-pintar {
     <button onclick="muatDraft()" title="Buka Draft Terakhir" style="padding: 5px;">
         <i class="fas fa-folder-open"></i> Buka Draft
     </button>
-</div>
-     
-</div>
-
+</div>   
     <div>
-    <div style="display: flex; flex-wrap: wrap; gap: 20px; background: #ecf0f1; padding:5px; border-radius: 10px;">
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; background: #ecf0f1; padding:5px; border-radius: 10px;margin: 0px 3px;">
 
         <div style="flex: 2; min-width: 300px;">
-            <div id="canvas-editor">
+            <div id="canvas-editor" class="canvas-editor">
               <div id="wrapper-kanvas" style="position: relative; display: inline-block; padding-top:0px; padding-left:0px;">
     <div id="ruler-atas" style="/*position: absolute;*/ top: 0; left: 25px; right: 0; height: 20px; display: flex; border-bottom: 1px solid #3498db; overflow: hidden;"></div>
     
@@ -541,7 +625,7 @@ div#kontrol-pintar {
     </div>
 </div>
  <div id="gambarFon" class="butup"> 
-<div id="emotik" style="display:none;border: 1px solid #00000059;padding:10px;margin:5px;position: fixed;z-index: 9;width: 300px;background: white;border-radius: 10px;">
+<div id="emotik" style="display:none;border: 1px solid #00000059;padding:10px;margin:5px;position: fixed;z-index: 9;width: 300px;background: white;border-radius:10px;top: 0;overflow: overlay;height: 200px;">
   <div id="exper2"></div>
   <div id="emot" style="display:block;">
  <button class="btn-sakti" onclick="experimen1('♣')">♣</button> 
@@ -598,6 +682,20 @@ div#kontrol-pintar {
 </div>
   </div>
   <button class="btn-fullscreen-sultan" onclick="modeLayarLebar()" title="Mode Layar Tancep"><i class="fas fa-expand"></i></button>
+  
+  <div id="modal-kalkulator" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:999999; justify-content:center; align-items:center; padding:15px; box-sizing:border-box;">
+    
+    <div style="background:white; width:100%; max-width:500px; border-radius:8px; overflow:hidden; display:flex; flex-direction:column; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        
+        <div style="padding:12px;display:flex;justify-content: flex-end;">
+          <i class="fa fa-window-close" aria-hidden="true" onclick="tutupModalKalkulator()" style="position: relative;"></i>
+        </div>
+        
+        <div id="isi-iframe-kalkulator" style="width:100%; height:450px; background:#fff;">
+            </div>
+        
+    </div>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>  
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   
@@ -628,7 +726,7 @@ function loadLogo(event) {
         };
         reader.readAsDataURL(event.target.files[0]);
     }
-}
+} 
 
 function eksekusiPotong() {
     try {
@@ -636,6 +734,8 @@ function eksekusiPotong() {
 
         const canvasResult = cropper.getCroppedCanvas();
         const hasilGambarURL = canvasResult.toDataURL("image/png");
+      
+        simpanKeGaleri(hasilGambarURL);
 
         const logo = document.getElementById('logo-geser');
         logo.src = hasilGambarURL;
@@ -668,6 +768,7 @@ function eksekusiPotong() {
         cropper.destroy();
         cropper = null;
     }
+  
 }
 
 function tutupGbr() {
@@ -681,6 +782,56 @@ document.getElementById('modalCropper').style.display = 'none';
         cropper = null;
     }
   document.getElementById('kontrol-pintar').style.display = 'none';
+  document.getElementById("untukelas").innerHTML = '';
+}
+ //simpen gambar   
+function simpanKeGaleri(urlGambar) {
+    // 1. Ambil dulu data gudang yang udah ada, kalau kosong bikin array baru []
+    let gudangLogo = JSON.parse(localStorage.getItem('gudang_logo_user')) || [];
+
+    // 2. Masukin logo baru ke urutan pertama
+    gudangLogo.unshift(urlGambar);
+
+    // 3. Batasin biar gak kepenuhan (misal simpen 10 logo terakhir aja)
+    if (gudangLogo.length > 5) gudangLogo.pop();
+
+    // 4. Simpan balik ke memori browser
+    localStorage.setItem('gudang_logo_user', JSON.stringify(gudangLogo));
+
+    // 5. Tampilin ke layar
+    muatUlangGaleriLayar();
+}
+    
+function muatUlangGaleriLayar() {
+    const galeri = document.getElementById('galeri-user');
+    if (!galeri) return;
+
+    const gudangLogo = JSON.parse(localStorage.getItem('gudang_logo_user')) || [];
+    
+    // Kosongkan dulu raknya biar nggak dobel-dobel
+    galeri.innerHTML = "";
+
+    gudangLogo.forEach((url) => {
+        const imgKecil = document.createElement('img');
+        imgKecil.src = url;
+        imgKecil.style.width = "60px";
+        imgKecil.style.height = "60px";
+        imgKecil.style.objectFit = "contain";
+        imgKecil.style.border = "1px solid #ccc";
+        imgKecil.style.borderRadius = "5px";
+        imgKecil.style.cursor = "pointer";
+        imgKecil.style.background = "white";
+
+        imgKecil.onclick = function() {
+            const logo = document.getElementById('logo-geser');
+            logo.src = url;
+            logo.style.display = "block";
+            elemenTerpilih = logo;
+            document.getElementById('kontrol-pintar').style.display = 'flex';
+        };
+
+        galeri.appendChild(imgKecil);
+    });
 }
 
 // 2. Fungsi Tambah Teks Baru
@@ -688,12 +839,10 @@ function tambahTeksBaru() {
     const inputAn = document.getElementById('input-teks-baru');
     const isiTeks = inputAn.value;
     const canvas = document.getElementById('canvas-editor');
-    
-    // AMBIL FONT DARI SISTEM BARU
     const fontTerpilihCss = window.getComputedStyle(document.getElementById('font-terpilih')).fontFamily;
 
     if (isiTeks.trim() === "") {
-        tampilModal("Waduh, Kosong!", "Ketik tulisannya dulu, Bang! Biar mesinnya tahu mau nembak apa.", "peringatan");
+        tampilModal("Waduh, Kosong!", "Ketik tulisannya dulu, Bang!", "peringatan");
         return;
     }
 
@@ -711,18 +860,24 @@ function tambahTeksBaru() {
     teksBaru.style.whiteSpace = "nowrap";
     teksBaru.style.userSelect = "none";
 
+    // --- PASANG TITIK PENARIK (RESIZER) ---
+    const penarik = document.createElement('div');
+    penarik.className = "resizer"; // Pastikan class ini ada di CSS Abang
+    teksBaru.appendChild(penarik);
+
     canvas.appendChild(teksBaru);
 
-    // --- KESAKTIAN BARU DI SINI ---
-    bikinBisaDigeser(teksBaru); // Biar bisa digeser sendiri
-    aktifkanFiturPilihGroup(teksBaru); // Biar bisa dipilih buat gembok kelompok
+    // --- KASIH KESAKTIANNYA ---
+    bikinBisaDigeser(teksBaru);
+    bikinBisaDitarik(teksBaru, penarik); // <--- Ini yang bikin bisa ditarik
+    aktifkanFiturPilihGroup(teksBaru); 
 
-  
+    // Reset input dan kontrol
     inputAn.value = ""; 
     elemenTerpilih = teksBaru;
     document.getElementById('kontrol-pintar').style.display = 'flex';
     document.getElementById('emotik').style.display = 'none';
- 
+    document.getElementById("untukelas").innerHTML = '';
 }
 
 // 3. Fungsi Ukuran & Rotasi
@@ -801,12 +956,11 @@ function tambahBentuk(jenis) {
     const canvas = document.getElementById('canvas-editor');
     const bentuk = document.createElement('div');
     
-    // Seting dasar biar bisa digeser & diatur
-    bentuk.className = "teks-item"; // Kita pakai class yang sama biar dapet fungsi geser
+    bentuk.className = "teks-item"; 
     bentuk.style.position = "absolute";
     bentuk.style.top = "100px";
     bentuk.style.left = "100px";
-    bentuk.style.border = "2px solid black"; // Garis laser
+    bentuk.style.border = "2px solid black"; 
     bentuk.style.backgroundColor = "transparent";
 
     if (jenis === 'kotak') {
@@ -820,18 +974,90 @@ function tambahBentuk(jenis) {
     } 
     else if (jenis === 'garis') {
         bentuk.style.width = "150px";
-        bentuk.style.height = "0px"; // Garis cuma berupa border atas
-        bentuk.style.borderBottom = "none";
-        bentuk.style.borderLeft = "none";
-        bentuk.style.borderRight = "none";
+        bentuk.style.height = "2px"; // Kasih dikit biar gampang ditarik
+        bentuk.style.backgroundColor = "black";
+        bentuk.style.border = "none";
     }
 
+    // TAMBAHKAN TITIK PENARIK
+    const penarik = document.createElement('div');
+    penarik.className = "resizer";
+    bentuk.appendChild(penarik);
+
     canvas.appendChild(bentuk);
+    
+    // Kasih fungsi geser (yang sudah Abang punya)
     bikinBisaDigeser(bentuk);
     
-    // Langsung pilih elemen ini biar menu kontrol muncul
+    // KASIH FUNGSI TARIK MANUAL
+    bikinBisaDitarik(bentuk, penarik);
+    
     elemenTerpilih = bentuk;
     document.getElementById('kontrol-pintar').style.display = 'flex';
+  
+}
+    
+function bikinBisaDitarik(elemen, penarik) {
+    penarik.addEventListener('mousedown', mulaiTarik);
+    penarik.addEventListener('touchstart', mulaiTarik, {passive: false});
+
+    function mulaiTarik(e) {
+        e.preventDefault();
+        e.stopPropagation(); // Biar nggak bentrok sama fungsi geser
+
+        let startX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+        let startY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+        let startWidth = parseInt(document.defaultView.getComputedStyle(elemen).width, 10);
+        let startHeight = parseInt(document.defaultView.getComputedStyle(elemen).height, 10);
+
+        function melakukanPenarikan(e) {
+            let currentX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+            let currentY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+
+            let newWidth = startWidth + (currentX - startX);
+            let newHeight = startHeight + (currentY - startY);
+
+            // 1. Atur ukuran kotak (Container)
+            if (newWidth > 10) elemen.style.width = newWidth + 'px';
+            if (newHeight > 2) elemen.style.height = newHeight + 'px';
+
+            // 2. JURUS STRETCH (Tarik Paksa)
+            // Kita hitung skala perbandingan antara ukuran awal dan ukuran baru
+            if (elemen.innerText && elemen.innerText.trim() !== "") {
+                // Kita pake transform scale(x, y)
+                // x = skala lebar, y = skala tinggi
+                
+                // Pertama, matiin dulu wrap-nya biar teksnya nggak turun ke bawah
+                elemen.style.display = "flex";
+                elemen.style.alignItems = "center";
+                elemen.style.justifyContent = "center";
+                elemen.style.overflow = "visible";
+                elemen.style.whiteSpace = "nowrap";
+
+                // Kita asumsikan ukuran font dasar tetap di 40px (atau sesuai startHeight)
+                // Lalu kita "paksa" tampilannya ngikutin ukuran kotak lewat SCALE
+                const skalaX = newWidth / startWidth;
+                const skalaY = newHeight / startHeight;
+
+                elemen.style.transform = `scale(${skalaX}, ${skalaY})`;
+                
+                // Penting: transform-origin harus di tengah atau kiri biar nggak lari
+                elemen.style.transformOrigin = "center center";
+            }
+        }
+
+        function stopTarik() {
+            window.removeEventListener('mousemove', melakukanPenarikan);
+            window.removeEventListener('mouseup', stopTarik);
+            window.removeEventListener('touchmove', melakukanPenarikan);
+            window.removeEventListener('touchend', stopTarik);
+        }
+
+        window.addEventListener('mousemove', melakukanPenarikan);
+        window.addEventListener('mouseup', stopTarik);
+        window.addEventListener('touchmove', melakukanPenarikan, {passive: false});
+        window.addEventListener('touchend', stopTarik);
+    }
 }
 
 function toggleMenu() {
@@ -856,7 +1082,7 @@ function ubahUkuranBentuk() {
 }
 
 // 4. Logika Geser & Seleksi
-function bikinBisaDigeser(elemen) {
+    function bikinBisaDigeser(elemen) {
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     
     elemen.onmousedown = mulaiGeser;
@@ -971,7 +1197,7 @@ function bikinBisaDigeser(elemen) {
 }
     
 // Gunakan Tekan Lama (Long Press) atau Klik Kanan biar enak di HP
-function aktifkanFiturPilihGroup(el) {
+    function aktifkanFiturPilihGroup(el) {
     el.addEventListener('contextmenu', function(e) {
         e.preventDefault(); // Biar gak muncul menu asli HP/Browser
         
@@ -984,14 +1210,13 @@ function aktifkanFiturPilihGroup(el) {
             this.style.outline = "none";
         }
     });
-}
+ }
 
 
 // 5. Fungsi Kontrol
 function toggleDropdown() {
     document.getElementById('opsi-font').classList.toggle('show-options');
 }
-
 function pilihFont(nama, value) {
     const boxTeks = document.getElementById('font-terpilih');
     
@@ -1062,6 +1287,31 @@ function duplikatElemen() {
     }
 }
     
+function aturLapis(arah) {
+    if (!elemenTerpilih) return;
+    
+    // Ambil semua benda yang ada di kanvas
+    const semuaBenda = document.querySelectorAll('.teks-item, .img-item');
+    let zIndexTertinggi = 0;
+    let zIndexTerendah = 100;
+
+    semuaBenda.forEach(el => {
+        let z = parseInt(window.getComputedStyle(el).zIndex) || 1;
+        if (z > zIndexTertinggi) zIndexTertinggi = z;
+        if (z < zIndexTerendah) zIndexTerendah = z;
+    });
+
+    if (arah === 'depan') {
+        // Kasih z-index paling tinggi + 1 biar dia mimpin di depan
+        elemenTerpilih.style.zIndex = zIndexTertinggi + 1;
+    } else {
+        // Kasih z-index paling rendah - 1 biar dia ngumpet di belakang
+        // Tapi jangan sampe 0 biar nggak ilang dari pandangan
+        let baru = zIndexTerendah - 1;
+        elemenTerpilih.style.zIndex = baru < 1 ? 1 : baru;
+    }
+}
+    
 // Tutup dropdown kalau klik di luar
 window.onclick = function(event) {
     if (!event.target.closest('.custom-select-wrapper')) {
@@ -1081,6 +1331,7 @@ function hapusElemen() {
         redipkanKontrol();
         document.getElementById('kontrol-pintar').style.display = 'none';
     }
+  document.getElementById("untukelas").innerHTML = '';
 }
 
 function nyalakanKontrol() {
@@ -1126,10 +1377,12 @@ function aktifkanCoret() {
     const btnPensil = document.getElementById('btn-pensil');
     const btnHapus = document.getElementById('btn-penghapus'); // Asumsi ada tombol penghapus
     const butClose = document.getElementById('but-close');
+    const ktkNyoret = document.getElementById('nyoret');
     
     if (modeCoret) {
         btnPensil.style.background = "#e74c3c";
         butClose.style.display = "block";
+        ktkNyoret.style.display = "block";
         if(btnHapus) btnHapus.style.background = ""; // Matikan warna tombol hapus
         
         cvs.style.pointerEvents = "auto";
@@ -1141,6 +1394,7 @@ function aktifkanCoret() {
     } else {
         btnPensil.style.background = "";
         butClose.style.display = "none";
+        ktkNyoret.style.display = "none";
         cvs.style.pointerEvents = "none";
     }
 }
@@ -1168,6 +1422,7 @@ function aktifkanPenghapus() {
         btnHapus.style.background = "";
         butClose.style.display = "none";
         cvs.style.pointerEvents = "none";
+      document.getElementById('nyoret').style.display = "none";
     }
 }  
 
@@ -1341,6 +1596,7 @@ function bukainfile() {
         btn.style.background = ""; // Balik ke warna awal
         btn.style.color = "";
     }
+  document.getElementById("untukelas").innerHTML = ".resizer{display:none;}";
 }
     
  //Cari gambar   
@@ -1356,6 +1612,7 @@ function cariKeGoogle() {
   
   // Langsung buka tab baru
   window.open(linkGoogle, '_blank');
+  document.getElementById("untukelas").innerHTML = '';
 }
     
   // Paksa browser supaya bisa dizoom pake dua jari
@@ -1430,6 +1687,9 @@ async function downloadPDF() {
 
     pdf.addImage(imgData, 'PNG', x, y, lebarFinal, tinggiFinal);
     pdf.save(`Orderan-${namaFile}.pdf`);
+  
+    document.getElementById('menuFile').style.display = "none";
+  
 }
     
 // SIMPAN PNG    
@@ -1460,7 +1720,8 @@ async function simpanPNG() {
     if(rulerS) rulerS.style.display = "block";
     
     tampilModal("Selesai!", "Gambar PNG sudah masuk ke folder Download.", "peringatan");
-}    
+    document.getElementById('menuFile').style.display = "none";
+}
 
 //HITAM PUTIH GAMBAR
 function invertWarnaElemen() {
@@ -1479,6 +1740,8 @@ function invertWarnaElemen() {
 function toggleGrid() {
     const canvas = document.getElementById('canvas-editor');
     canvas.classList.toggle('pake-grid');
+  
+  document.getElementById("canvas-Edit").innerHTML = "";
 }
     
 //PENGGARIS-------
@@ -1517,6 +1780,18 @@ function buatPenggaris() {
         rulerSamping.appendChild(span);
     }
 }
+    
+//Canvas putih
+ function dasarLayar(namaLayar) {
+  var styleElement = document.getElementById("canvas-Edit");
+  
+  // Cek apakah isinya kosong?
+  if (styleElement.innerHTML === "") {
+    styleElement.innerHTML = "." + namaLayar + " {background: no-repeat;}";
+  } else {
+    styleElement.innerHTML = "";
+  }
+}   
 
 // Panggil fungsi ini pas halaman dibuka
 window.onload = buatPenggaris;
@@ -1634,12 +1909,55 @@ function eksekusiInstal() {
             pemicuInstal = null;
         });
     }
+  document.getElementById('pinterin').style.display = 'block';
 }
 
 function tutupNotif() {
     document.getElementById('notif-instal').style.display = 'none';
 }
+    
+    
+//BUKA TUTUP TOMBOL    
+function tutupKolom(namaKelas) {
+ // Aturan CSS yang akan diterapkan
+ var aturanCSS = '.' + namaKelas + ' { display: flex; }';
   
+ // Langsung memasukkan aturan ke elemen <style id="memo">
+ document.getElementById("untukelas").innerHTML = aturanCSS;
+}
+    
+function tutpKolm() {
+document.getElementById("untukelas").innerHTML = "";
+}
+    
+//IFRAME HARGA GRAFIR
+function bukaModalKalkulator() {
+    const modal = document.getElementById('modal-kalkulator');
+    const areaIframe = document.getElementById('isi-iframe-kalkulator');
+    
+    if (modal && areaIframe) {
+        // Muncukin modalnya di tengah layar
+        modal.style.display = 'flex';
+        
+        // Panggil file kalkulator.html ke dalam iframe
+        // Catatan: Pastikan file kalkulator.html Abang nanti satu folder ya!
+        areaIframe.innerHTML = `<iframe src="kalkulator.html" style="width:100%; height:100%; border:none;"></iframe>`;
+    }
+}
+
+function tutupModalKalkulator() {
+    const modal = document.getElementById('modal-kalkulator');
+    const areaIframe = document.getElementById('isi-iframe-kalkulator');
+    
+    if (modal) modal.style.display = 'none';
+    if (areaIframe) areaIframe.innerHTML = ''; // Bersihkan iframe biar gak makan ram latar belakang
+}
+    
+// Pas aplikasi dibuka, langsung isi rak galerinya
+document.addEventListener('DOMContentLoaded', function() {
+    muatUlangGaleriLayar();
+});
+    
 document.addEventListener('keydown', function(e) {
     if (e.key === "Delete" || e.key === "Backspace") {
         // Hanya hapus kalau lagi nggak ngetik di input teks
@@ -1654,7 +1972,7 @@ document.addEventListener('keydown', function(e) {
 	  
 // Inisialisasi awal geser buat logo lama kalau ada
 if(document.getElementById("logo-geser")) bikinBisaDigeser(document.getElementById("logo-geser"));
-    
+
 </script>
 	<script>
   if ('serviceWorker' in navigator) {
@@ -1665,5 +1983,6 @@ if(document.getElementById("logo-geser")) bikinBisaDigeser(document.getElementBy
     });
   }
 </script>
+  
  </body>
 </html>
