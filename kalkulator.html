@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href='https://shorturl.at/1tSRa' rel='icon' type='image/png'/>
+<link href='https://shorturl.at/1tSRa' rel='icon' sizes='192x192'/>
+<link href='https://shorturl.at/1tSRa' rel='apple-touch-icon' sizes='180x180'/>
+<link href='https://shorturl.at/1tSRa'/> 
+<meta content='https://shorturl.at/1tSRa' name='msapplication-TileImage'/>
+<meta content='#c3c3c3' name='theme-color'/>
+<meta content='#c3c3c3' name='msapplication-navbutton-color'/>
+<meta content='yes' name='mobile-web-app-capable'/>
+<meta content='#c3c3c3' name='apple-mobile-web-app-status-bar-style'/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>minieditor laser v2</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; text-align: center; padding: 20px; background-color: #2c3e50; color: white; margin: 0; }
+        .container { background: #ecf0f1; padding: 20px; border-radius: 15px; max-width: 600px; margin: 20px auto; color: #333; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .upload-area { border: 2px dashed #bdc3c7; padding: 30px; border-radius: 10px; cursor: pointer; background: #fff; margin-bottom: 20px; }
+        .upload-area:hover { border-color: #3498db; }
+        input[type="file"] { display: none; }
+        .preview-img { max-width: 100%; height: auto; margin-top: 15px; border-radius: 8px; display: none; border: 1px solid #ddd; }
+        .input-group { margin: 15px 0; text-align: left; }
+        label { font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px; }
+        input[type="number"] { width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box; }
+        .btn-hitung { background: #e67e22; color: white; padding: 15px; border: none; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .btn-hitung:hover { background: #d35400; }
+        #hasil-hitung { margin-top: 20px; display: none; }
+        .price-box { background: #f1c40f; padding: 20px; border-radius: 10px; color: #2c3e50; }
+        .price-value { font-size: 24px; font-weight: bold; }
+      #kirim-data { margin-top: 20px;color: black; display: none; }
+      buttoni.btni.btni-default {
+    background: #00f356;
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 6px 1px black;
+    font-weight: bold;
+}
+      
+      /* Style Modal Alert Keren */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.modal-box {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.7);
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 300px;
+    width: 80%;
+    transition: all 0.3s ease;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+}
+
+.modal-overlay.active { display: block; }
+.modal-overlay.active .modal-box { transform: translate(-50%, -50%) scale(1); }
+
+.modal-box h3 { color: #e67e22; margin-top: 0; }
+.modal-box p { color: #333; margin-bottom: 20px; }
+.btn-close {
+    background: #2c3e50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+    </style>
+</head>
+<body>
+<screenshot>
+<div class="container">
+    <h2>Simulasi Harga Grafir</h2>
+    <p>Upload desain Anda untuk cek estimasi biaya</p>
+
+    <div class="upload-area" onclick="document.getElementById('file-input').click()">
+    <span id="upload-text">Klik untuk Upload Gambar (PNG/JPG)</span>
+    <input type="file" id="file-input" accept="image/*" onchange="bukaMesinPotong(event)" style="display:none">
+    <img id="img-preview" class="preview-img">
+</div>
+<p style="color: #e74c3c; font-size: 12px; font-weight: bold; margin-top: 5px;">
+    *Catatan: Gambar wajib Hitam Putih (Grayscale) agar hitungan akurat.
+</p>
+    <div class="input-group">
+        <label>Lebar Desain atau Gambar (cm):</label>
+        <input type="number" id="lebar-real" placeholder="Masukan ukuran lebar desain" value="">
+    </div>
+
+  <div class="input-group">
+    <label>Pilih Kedalaman Grafir:</label>
+    <select id="mode-speed" style="width: 100%; padding: 10px; border-radius: 5px;">
+        <option value="1">Standar (Speed 150)</option>
+        <option value="1.5">Lebih Dalam (Speed 100)</option>
+    </select>
+</div>
+    <button class="btn-hitung" onclick="prosesKalkulasi()">Cek Estimasi Harga</button>
+
+    <div id="hasil-hitung">    
+  <div class="price-box">
+    <span id="label-waktu">Estimasi Waktu: - Menit</span><br>
+    <span class="price-value" id="label-harga">Rp 0</span>
+    
+    <div id="pesan-minimal"></div> 
+    
+    <p style="font-size: 11px; margin-top: 10px;">*Harga dapat berubah tergantung kerumitan Media dan desain saat dicek teknisi.</p>
+</div>
+  </div>
+</div>
+  </screenshot>
+<div id="kirim-data"><buttoni type="buttoni" class="btni btni-default">Simpan Data</buttoni></div>
+  
+<canvas id="calc-canvas" style="display:none;"></canvas>
+<div id="customAlert" class="modal-overlay">
+    <div class="modal-box">
+        <h3>Waduh!</h3>
+        <p id="alertMessage">Pesan error di sini...</p>
+        <button class="btn-close" onclick="tutupAlert()">Oke, Siap!</button>
+    </div>
+</div>
+  
+  <div id="modalCropper" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; justify-content:center; align-items:center; flex-direction:column;">
+    
+    <div style="width:90%; max-height:80vh;">
+        <img id="image-to-crop" style="max-width:100%;">
+    </div>
+
+    <div style="margin-top:20px;">
+        <button onclick="eksekusiPotong()" style="padding:10px 20px; background:green; color:white;">PAS, POTONG!</button>
+        <button onclick="tutupGbr()" style="padding:10px 20px; background:red; color:white;">BATAL</button>
+    </div>
+</div>
+<script>
+    const HARGA_PER_MENIT = 3000; // Silakan Abang sesuaikan sendiri
+    const SPEED_KOEFISIEN = 0.0006; // Kalibrasi agar mendekati "TV" RDWorks
+
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function() {
+            const output = document.getElementById('img-preview');
+            output.src = reader.result;
+            output.style.display = 'block';
+            document.getElementById('upload-text').style.display = 'none';
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+  
+  let cropper;
+  
+  function bukaMesinPotong(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // 1. Masukkan gambar ke dalam elemen image di dalam modal cropper
+            const imageToCrop = document.getElementById('image-to-crop');
+            imageToCrop.src = e.target.result;
+
+            // 2. Munculkan modal cropper-nya
+            document.getElementById('modalCropper').style.display = 'flex';
+
+            // 3. Siapkan mesin Cropper.js
+            if (cropper) {
+                cropper.destroy(); // Hancurkan yang lama kalau ada
+            }
+            cropper = new Cropper(imageToCrop, {
+                aspectRatio: NaN, // Bebas sesuai keinginan user
+                viewMode: 1,
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+}
+  
+  function eksekusiPotong() {
+    if (!cropper) return;
+
+    const canvasResult = cropper.getCroppedCanvas();
+    const hasilGambarURL = canvasResult.toDataURL("image/png");
+
+    // Tampilkan di preview yang ada di kotak upload (img-preview)
+    const previewUtama = document.getElementById('img-preview');
+    previewUtama.src = hasilGambarURL;
+    previewUtama.style.display = "block";
+    
+    // Sembunyikan teks "Klik untuk Upload"
+    document.getElementById('upload-text').style.display = "none";
+
+    // Jalankan fungsi hitung harga (jika sudah ada)
+    // hitungHargaGrafir(); 
+
+    // Tutup modal dan bersihkan input
+    tutupGbr(); 
+}
+  
+  function tutupGbr() {
+document.getElementById('modalCropper').style.display = 'none';
+  
+  // RESET INPUT FILE (Supaya bisa masukin gambar yang sama lagi)
+    document.getElementById('file-input').value = ""; 
+    
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+}
+
+    function prosesKalkulasi() {
+    const img = document.getElementById('img-preview');
+    const lebarRealInput = document.getElementById('lebar-real').value;
+    const canvas = document.getElementById('calc-canvas');
+    const ctx = canvas.getContext('2d');
+
+    if (!img.src) {
+        tampilkanAlert("Upload gambar dulu ya");
+        return;
+    }
+
+    const lebarReal = parseFloat(lebarRealInput);
+    if (lebarReal <= 0 || isNaN(lebarReal)) {
+        tampilkanAlert("Isi lebar desainnya dong");
+        return;
+    }
+
+    // 1. Gambar ke canvas (Skala 300px)
+    const scale = 300 / img.width; 
+    canvas.width = 300;
+    canvas.height = img.height * scale;
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    // 2. PROSES OTOMATIS HITAM PUTIH (Grayscale)
+    let imgDataObj = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let data = imgDataObj.data;
+    for (let i = 0; i < data.length; i += 4) {
+        let r = data[i], g = data[i+1], b = data[i+2];
+        // Rumus grayscale yang lebih "nendang" (Luminance)
+        let grayscale = 0.299 * r + 0.587 * g + 0.114 * b;
+        data[i] = data[i+1] = data[i+2] = grayscale; 
+    }
+    ctx.putImageData(imgDataObj, 0, 0); 
+
+    // --- TAMBAHAN BIAR KELIHATAN DI LAYAR ---
+    // Kita paksa gambar preview (img-preview) nampilin hasil dari canvas
+    img.src = canvas.toDataURL();
+
+    // 3. ANALISIS SCAN LINE (Membaca pixel gelap)
+    let totalLariX = 0;
+    let barisAktif = 0;
+    const dataBaru = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+    for (let y = 0; y < canvas.height; y++) {
+        let minX = -1; let maxX = -1;
+        for (let x = 0; x < canvas.width; x++) {
+            const i = (y * canvas.width + x) * 4;
+            // Jika pixel lebih gelap dari abu-abu tengah (threshold 128)
+            if (dataBaru[i] < 128) { 
+                if (minX === -1) minX = x;
+                maxX = x;
+            }
+        }
+        if (minX !== -1) {
+            totalLariX += (maxX - minX);
+            barisAktif++;
+        }
+    }
+
+    // 4. HITUNGAN HARGA & WAKTU
+    const lebarKalibrasi = 3; 
+    const faktorSkala = lebarReal / lebarKalibrasi;
+    const faktorLuas = faktorSkala * faktorSkala;
+    const faktorSpeed = parseFloat(document.getElementById('mode-speed').value) || 1;
+
+    let estimasiDetikDasar = (totalLariX * SPEED_KOEFISIEN) + (barisAktif * 0.05);
+    let estimasiDetikReal = (estimasiDetikDasar * faktorLuas) * faktorSpeed;
+    
+    let totalMenitAsli = estimasiDetikReal / 60;
+    let totalHargaHitung = totalMenitAsli * HARGA_PER_MENIT;
+    let totalHargaFinal = Math.ceil(totalHargaHitung / 500) * 500;
+
+    if (totalHargaFinal < 3000) totalHargaFinal = 3000;
+
+    // 5. TAMPILKAN HASIL & PESAN MINIMAL ORDER
+    document.getElementById("hasil-hitung").style.display = "block";
+    document.getElementById("label-waktu").innerText = `Estimasi Waktu: ${totalMenitAsli.toFixed(1)} Menit`;
+    document.getElementById("label-harga").innerText = `Rp ${totalHargaFinal.toLocaleString('id-ID')}`;
+    document.getElementById("kirim-data").style.display = "block";
+      
+    let pesanMinimalHtml = "";
+    if (totalHargaFinal < 5000) {
+        pesanMinimalHtml = `
+            <div style="margin-top:10px; padding:10px; background:#f39c12; color:white; border-radius:5px; font-size:12px;">
+                <strong>Info:</strong> Harga di bawah Rp 5.000 wajib minimal order 12 pcs.
+            </div>`;
+    }
+    document.getElementById("pesan-minimal").innerHTML = pesanMinimalHtml;
+}
+  // Fungsi Panggil Alert Keren
+function tampilkanAlert(pesan) {
+    document.getElementById("alertMessage").innerText = pesan;
+    document.getElementById("customAlert").classList.add("active");
+}
+
+function tutupAlert() {
+    document.getElementById("customAlert").classList.remove("active");
+}
+
+// CARA PAKAI DI FUNGSI KALKULASI:
+// Ganti: alert("Upload gambar dulu ya, Bang!");
+// Jadi: tampilkanAlert("Upload gambar dulu ya, Bang!");
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+  const srcElement = document.querySelector("screenshot"),
+  btns = document.querySelectorAll("buttoni");
+
+  btns.forEach(btn => { // looping through each btn
+    // adding click event to each btn
+    btn.addEventListener("click", () => {
+      // creating canvas of element using html2canvas
+      html2canvas(srcElement).then(canvas => {
+        // adding canvas/screenshot to the body
+        if(btn.id === "take-src-only") {
+          return document.body.appendChild(canvas);
+        }
+
+        // downloading canvas/screenshot
+        const a = document.createElement("a");
+        a.href = canvas.toDataURL();
+        a.download = "Nota kontan.jpg";
+        a.click();
+      });
+    });
+  });
+</script>
+</body>
+</html>
