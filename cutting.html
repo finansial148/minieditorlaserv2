@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cutting</title>
+    <style>
+      h3.post-title,.mobile h3.post-title  {
+    font-size: 1px;
+}
+        body { font-family: 'Segoe UI', sans-serif; text-align: center; padding: 20px; background-color: #2c3e50; color: white; margin: 0; }
+        .container-cutting { background: #ecf0f1; padding: 20px; border-radius: 15px; max-width: 600px; margin: 20px auto; color: #333; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .upload-area { border: 2px dashed #bdc3c7; padding: 30px; border-radius: 10px; cursor: pointer; background: #fff; margin-bottom: 20px; }
+        .upload-area:hover { border-color: #3498db; }
+        input[type="file"] { display: none; }
+        .preview-img { max-width: 100%; height: auto; margin-top: 15px; border-radius: 8px; display: none; border: 1px solid #ddd; }
+        .input-group { margin: 15px 0; text-align: left; }
+        label { font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px; }
+        input[type="number"] { width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box; }
+        .btn-hitung { background: #e67e22; color: white; padding: 15px; border: none; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .btn-hitung:hover { background: #d35400; }
+        #hasil-hitung { margin-top: 20px; display: none; }
+        .price-box { background: #f1c40f; padding: 20px; border-radius: 10px; color: #2c3e50; }
+        .price-value { font-size: 24px; font-weight: bold; }
+      #simpen-data { margin-top: 20px;color: black; display: none; }
+      buttoni.btni.btni-default {
+    background: #00f356;
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 6px 1px black;
+    font-weight: bold;
+}
+      
+      /* Style Modal Alert Keren */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.modal-box {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.7);
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 300px;
+    width: 80%;
+    transition: all 0.3s ease;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+}
+
+.modal-overlay.active { display: block; }
+.modal-overlay.active .modal-box { transform: translate(-50%, -50%) scale(1); }
+
+.modal-box h3 { color: #e67e22; margin-top: 0; }
+.modal-box p { color: #333; margin-bottom: 20px; }
+.btn-close {
+    background: #2c3e50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+      img#img-preview {
+    filter: grayscale(1);
+    padding: 0;
+}
+      .btn-speed {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid #ccc;
+        background: #f9f9f9;
+        cursor: pointer;
+        font-size: 12px;
+        border-radius: 4px;
+    }
+    .btn-speed.active {
+        background: #28a745;
+        color: white;
+        border-color: #1e7e34;
+    }
+    </style>
+</head>
+<body>
+<screenshot>
+<div class="container-cutting">
+    <h2>Kalkulator Laser Cutting (Potong)</h2>
+    <p>Hitung biaya potong akrilik, Triplek, atau kulit berdasarkan panjang garis desain.</p>
+
+    <div class="upload-area" onclick="document.getElementById('file-input').click()">
+        <p id="upload-text">Klik untuk Upload Desain Cutting (PNG/JPG)</p>
+        <img id="img-preview" style="max-width: 100%; display: none;" />
+        <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="previewGambar(event)" />
+    </div>
+    
+    <p style="color: #e74c3c; font-size: 11px; font-weight: bold;">
+        *Wajib Hitam Putih. Garis hitam adalah jalur potong mesin.
+    </p>
+
+    <div class="input-group">
+        <label>Lebar Media Asli (cm):</label>
+        <input type="number" id="lebar-real" placeholder="Contoh: 10" />
+    </div>
+  
+  <div class="input-group">
+    <label>Pilih Kecepatan Mesin:</label>
+    <div style="display: flex; gap: 5px; margin-top: 5px;">
+        <button type="button" class="btn-speed active" onclick="setSpeed(2, this)">Standar (15)</button>
+        <button type="button" class="btn-speed" onclick="setSpeed(1, this)">Lambat (10)</button>
+        <button type="button" class="btn-speed" onclick="setSpeed(6, this)">Cepat (50)</button>
+    </div>
+</div>
+
+    <button class="btn-hitung" onclick="prosesKalkulasi()">Cek Harga Potong</button>
+
+    <div id="hasil-hitung" class="price-box" style="display: none;">
+        <span id="label-waktu">Estimasi Waktu: - Menit</span><br>
+        <span class="price-value" id="label-harga">Rp 0</span>
+        <div id="pesan-minimal"></div>
+    </div>
+</div>
+  </screenshot>
+<div id="simpen-data"><buttoni type="buttoni" class="btni btni-default">Simpan Data</buttoni></div>
+  
+<canvas id="calc-canvas" style="display: none;"></canvas>
+<div id="customAlert" class="modal-overlay">
+    <div class="modal-box">
+        <h3>Waduh!</h3>
+        <p id="alertMessage">Pesan error di sini...</p>
+        <button class="btn-close" onclick="tutupAlert()">Oke, Siap!</button>
+    </div>
+</div>
+<script> 
+function previewGambar(event) {
+    const reader = new FileReader();
+    reader.onload = function() {
+        const output = document.getElementById('img-preview');
+        output.src = reader.result;
+        output.style.display = 'block';
+        document.getElementById('upload-text').style.display = 'none';
+        
+        // Sembunyikan hasil hitung lama kalau user ganti gambar baru
+        document.getElementById("hasil-hitung").style.display = "none";
+    }
+    if(event.target.files[0]) {
+        reader.readAsDataURL(event.target.files[0]);
+    }
+} 
+  
+// --- SETINGAN KHUSUS CUTTING (LOGIKA BENANG) ---
+let SPEED_MESIN = 2; // Default
+let HARGA_PER_MENIT_POTONG = parseInt(localStorage.getItem('HARGACUTTING')) || 7500;
+
+function cekhargacutting() {
+    const cut = localStorage.getItem('HARGACUTTING');
+    const elemenSaved = document.getElementById('savedHargaCutting');
+    
+    if (elemenSaved) {
+        elemenSaved.innerHTML = cut ? `Rp ${parseInt(cut).toLocaleString('id-ID')} / Menit` : 'Menggunakan harga standar (Rp 7.500)';
+    }
+    
+    // UPDATE VARIABEL UTAMA: Biar rumus perkalian waktu cutting Abang langsung berubah nilainya
+    HARGA_PER_MENIT_POTONG = cut ? parseInt(cut) : 7500;
+}
+document.addEventListener('DOMContentLoaded', cekhargacutting);
+function setSpeed(nilai, elemen) {
+    // 1. Update nilai speed mesin
+    SPEED_MESIN = nilai;
+    
+    // 2. Atur tampilan tombol (biar kelihatan mana yang aktif)
+    const semuaTombol = document.querySelectorAll('.btn-speed');
+    semuaTombol.forEach(btn => btn.classList.remove('active'));
+    elemen.classList.add('active');
+    
+    // 3. Langsung hitung ulang kalau gambarnya sudah ada
+    if (document.getElementById('img-preview').src) {
+        prosesKalkulasi();
+    }
+}
+  
+function prosesKalkulasi() {
+    const img = document.getElementById('img-preview');
+    const lebarRealInput = document.getElementById('lebar-real').value;
+    const canvas = document.getElementById('calc-canvas');
+    const ctx = canvas.getContext('2d');
+  
+    // Validasi Gambar
+    if (!img.src || img.src === "" || img.style.display === "none") {
+        tampilkanAlert("Upload gambar dulu ya");
+        return; 
+    }
+
+    // Validasi Ukuran
+    const lebarRealCm = parseFloat(lebarRealInput);
+    if (isNaN(lebarRealCm) || lebarRealCm <= 0) {
+        tampilkanAlert("Isi lebar desainnya dulu, Bang");
+        return; 
+    }
+
+    // Set Resolusi Proses (Target 500px biar enteng)
+    const targetWidth = 500; 
+    const scale = targetWidth / img.naturalWidth; 
+    canvas.width = targetWidth;
+    canvas.height = img.naturalHeight * scale;
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    // 1. Convert ke B&W Tajam (Thresholding)
+    let imgDataObj = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let data = imgDataObj.data;
+    for (let i = 0; i < data.length; i += 4) {
+        let avg = (data[i] + data[i+1] + data[i+2]) / 3;
+        // Jika agak gelap dikit, langsung itemin (biar garis kebaca)
+        let bw = (avg < 180) ? 0 : 255; 
+        data[i] = data[i+1] = data[i+2] = bw;
+    }
+    ctx.putImageData(imgDataObj, 0, 0);
+
+    // 2. HITUNG PIXEL TEPI (Path Length)
+    let pixelTepi = 0;
+    const dataBaru = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    const w = canvas.width;
+    const h = canvas.height;
+
+    for (let y = 1; y < h - 1; y++) {
+        for (let x = 1; x < w - 1; x++) {
+            const i = (y * w + x) * 4;
+            if (dataBaru[i] === 0) { // Jika pixel Hitam
+                // Cek tetangga, kalau ada putih berarti ini tepi/garis
+                if (dataBaru[((y-1)*w+x)*4] === 255 || dataBaru[((y+1)*w+x)*4] === 255 ||
+                    dataBaru[(y*w+(x-1))*4] === 255 || dataBaru[(y*w+(x+1))*4] === 255) {
+                    pixelTepi++;
+                }
+            }
+        }
+    }
+
+    // Analogi Benang: bagi 2 karena garis gambar punya sisi luar-dalam
+    let panjangBenangPixel = pixelTepi / 2;
+
+    // 3. KONVERSI PIXEL KE MILIMETER (mm)
+    const lebarRealMm = lebarRealCm * 10;
+    const mmPerPixel = lebarRealMm / targetWidth;
+    const totalPanjangMm = panjangBenangPixel * mmPerPixel;
+    const totalPanjangMeter = totalPanjangMm / 1000;
+
+    // 4. HITUNG WAKTU & HARGA (Pake SPEED_MESIN dari tombol)
+    // Pastikan let SPEED_MESIN sudah dideklarasikan di luar fungsi ini
+    let totalDetik = totalPanjangMm / SPEED_MESIN;
+    let totalMenit = totalDetik / 60;
+    
+    // Gunakan harga per menit potong (pastikan variabel ini ada di atas)
+    let totalHarga = Math.ceil((totalMenit * HARGA_PER_MENIT_POTONG) / 500) * 500;
+    
+    // Harga Minimal Toko
+    if (totalHarga < 10000) totalHarga = 10000; 
+
+    // 5. TAMPILKAN HASIL
+    const hasilHitungArea = document.getElementById("hasil-hitung");
+    const labelWaktu = document.getElementById("label-waktu");
+    const labelHarga = document.getElementById("label-harga");
+    const tombolSimpan = document.getElementById("simpen-data");
+
+    if (totalPanjangMeter <= 0.01) { // Jika hampir gak ada garis
+        hasilHitungArea.style.display = "block";
+        labelWaktu.innerHTML = `<span style="color: #e74c3c; font-weight: bold;">Gambar Tidak Terbaca</span><br><small>Pastikan garis hitam tegas.</small>`;
+        labelHarga.innerText = "Rp -";
+        if (tombolSimpan) tombolSimpan.style.display = "none";
+    } else {
+        hasilHitungArea.style.display = "block";
+        labelWaktu.innerHTML = `
+            Panjang Jalur: <b>${totalPanjangMeter.toFixed(2)} Meter</b><br>
+            Estimasi Waktu: ${totalMenit.toFixed(1)} Menit (Spd: ${SPEED_MESIN})
+        `;
+        labelHarga.innerText = `Rp ${totalHarga.toLocaleString('id-ID')}`;
+        if (tombolSimpan) tombolSimpan.style.display = "block";
+    }
+}
+  // Fungsi Panggil Alert Keren
+function tampilkanAlert(pesan) {
+    document.getElementById("alertMessage").innerText = pesan;
+    document.getElementById("customAlert").classList.add("active");
+}
+
+function tutupAlert() {
+    document.getElementById("customAlert").classList.remove("active");
+}
+
+// CARA PAKAI DI FUNGSI KALKULASI:
+// Ganti: alert("Upload gambar dulu ya, Bang!");
+// Jadi: tampilkanAlert("Upload gambar dulu ya, Bang!");
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+  const srcElement = document.querySelector("screenshot"),
+  btns = document.querySelectorAll("buttoni");
+
+  btns.forEach(btn => { // looping through each btn
+    // adding click event to each btn
+    btn.addEventListener("click", () => {
+      // creating canvas of element using html2canvas
+      html2canvas(srcElement).then(canvas => {
+        // adding canvas/screenshot to the body
+        if(btn.id === "take-src-only") {
+          return document.body.appendChild(canvas);
+        }
+
+        // downloading canvas/screenshot
+        const a = document.createElement("a");
+        a.href = canvas.toDataURL();
+        a.download = "Nota kontan.jpg";
+        a.click();
+      });
+    });
+  });
+</script>
+</body>
+</html>
