@@ -1,10 +1,15 @@
-const CACHE_NAME = 'mel-v2-cache-v6';
+const CACHE_NAME = 'mel-v2-cache-v7';
 const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
-  'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css',
-  'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js'
+  './cropper.min.css',
+  './cropper.min.js',
+  './cutting.html',
+  './efek-levels.html',
+  './grafir-foto.html',
+  './kalkulator.html',
+  './melingkar.html'
 ];
 
 // Install Service Worker & Simpan file ke Memori HP/PC
