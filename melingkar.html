@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Teks Melingkar MEL v2</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background: #f5f6fa;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+        .kontrol-box {
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+        }
+        .input-grup {
+            margin-bottom: 10px;
+        }
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;background: #00000042;color: #ff0000;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin: 4px 0;
+        }
+        .preview-box {
+            flex: 1;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border: 2px dashed #b2bec3;
+            position: absolute;z-index: 1;
+    pointer-events: none;
+        }
+        /* Background grid biar kerasa kaya software desain beneran */
+        .preview-box::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
+            background-size: 10px 10px;
+            pointer-events: none;
+        }
+        .btn-kirim {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
+            margin-top: 10px;
+            box-shadow: 0 3px 6px rgba(46, 204, 113, 0.3);
+            transition: 0.2s;
+        }
+        .btn-kirim:hover {
+            background: #27ae60;
+        }
+        svg {
+            background: transparent;
+            max-width: 100%;
+        }
+      .ngedit {
+    position: relative;
+}
+    </style>
+</head>
+<body>
+<div class="preview-box">
+        <div id="wadah-svg">
+            </div>
+    </div>
+  <div class="ngedit">
+    <div class="kontrol-box">
+        <div class="input-grup">
+            <label><i class="fas fa-font"></i> KETIK TULISAN GRAFIR:</label>
+            <input type="text" id="teks-input" value="*GANTI TULISAN INI*" oninput="updateTeksMelingkar()">
+          <div class="input-grup">
+    <label><i class="fas fa-shapes"></i> MODE BENTUK GRAFIR:</label>
+    <div style="display: flex; gap: 10px; margin-top: 4px;">
+        <label style="flex: 1; background: #fff; border: 2px solid #2ecc71; padding: 8px; border-radius: 4px; text-align: center; cursor: pointer; font-size: 13px;">
+            <input type="radio" name="mode-lingkar" id="mode-penuh" value="penuh" checked onchange="updateTeksMelingkar()"> 🔵 Penuh
+        </label>
+        <label style="flex: 1; background: #fff; border: 2px solid #3498db; padding: 8px; border-radius: 4px; text-align: center; cursor: pointer; font-size: 13px;">
+            <input type="radio" name="mode-lingkar" id="mode-setengah" value="setengah" onchange="updateTeksMelingkar()"> 🌙 Setengah
+        </label>
+    </div>
+</div>
+          <div class="input-grup" style="position: relative;background: transparent;max-width: 150px;">
+    <label><i class="fas fa-font"></i> PILIH JENIS HURUF (FONT):</label>
+    
+    <div id="custom-select-head" onclick="toggleDropdownFont()" style="background:#00ff6682; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+        <span id="font-terpilih-nama">Impact</span>
+        <i class="fas fa-chevron-down" style="font-size: 12px; color: #888;"></i>
+    </div>
+    
+    <div id="custom-select-options" style="display: none; position: absolute; top: 100%; left: 0; width: 100%; background:rgb(255 255 255);color: #001fff; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; max-height: 200px; overflow-y: auto; box-sizing: border-box;">
+        <div onclick="pilihFontCustom('Impact, sans-serif', 'Impact (Tebal Kotak)')" style="padding: 10px; cursor: pointer; font-weight: bold; border-bottom: 1px solid #eee; font-family: Impact;">Impact</div>
+        <div onclick="pilihFontCustom('\'Arial Black\', sans-serif', 'Arial Black')" style="padding: 10px; cursor: pointer; font-weight: bold; border-bottom: 1px solid #eee; font-family: 'Arial Black';">Arial Black</div>
+        <div onclick="pilihFontCustom('sans-serif', 'Sans-Serif Standard')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; font-family: sans-serif;">Sans-Serif</div>
+        <div onclick="pilihFontCustom('Arial, sans-serif', 'Arial (Formal)')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; font-family: Arial;">Arial</div>
+        <div onclick="pilihFontCustom('\'Courier New\', monospace', 'Courier New')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; font-family: 'Courier New';">Courier New</div>
+        <div onclick="pilihFontCustom('Georgia, serif', 'Georgia (Resmi)')" style="padding: 10px; cursor: pointer; font-family: Georgia;">Georgia</div>
+    </div>
+    
+    <input type="hidden" id="select-font" value="Impact, sans-serif">
+</div>
+        </div>
+      
+
+        <div class="input-grup">
+            <label><i class="fas fa-text-height"></i> UKURAN HURUF (<span id="val-font">20</span>px):</label>
+            <input type="range" id="slider-font" min="10" max="50" value="20" oninput="updateTeksMelingkar()">
+        </div>
+
+        <div class="input-grup">
+            <label><i class="fas fa-circle-notch"></i> RADIUS LENGKUNGAN (<span id="val-radius">80</span>):</label>
+            <input type="range" id="slider-radius" min="30" max="140" value="80" oninput="updateTeksMelingkar()">
+        </div>
+        
+        <div class="input-grup">
+            <label><i class="fas fa-arrows-rotate"></i> GESER POSISI PUTARAN (<span id="val-putar">25</span>%):</label>
+            <input type="range" id="slider-putar" min="0" max="100" value="25" oninput="updateTeksMelingkar()">
+        </div>
+    </div>
+    <button class="btn-kirim" onclick="kirimKeKanvasUtama()">
+        <i class="fas fa-paper-plane"></i>SELESAI
+    </button>
+  </div>
+    <script>
+        // Fungsi untuk merakit & mengupdate SVG Teks Melingkar secara real-time
+        function updateTeksMelingkar() {
+    const teks = document.getElementById('teks-input').value;
+    const fontSize = Number(document.getElementById('slider-font').value);
+    const radius = Number(document.getElementById('slider-radius').value);
+    const putar = Number(document.getElementById('slider-putar').value);
+    const jenisFont = document.getElementById('select-font').value;
+
+    // Baca user lagi milih mode penuh atau setengah
+    const isPenuh = document.getElementById('mode-penuh').checked;
+
+    document.getElementById('val-font').innerText = fontSize;
+    document.getElementById('val-radius').innerText = radius;
+    document.getElementById('val-putar').innerText = putar;
+
+    const paddingHuruf = fontSize * 1.5; 
+    const lebarKotak = (radius * 2) + paddingHuruf;
+    
+    let tinggiKotak, cx, cy, dPath, rotasiAwal;
+
+    if (isPenuh) {
+        // --- 1. JALUR UNTUK LINGKARAN PENUH ---
+        tinggiKotak = lebarKotak; // Kotak persegi sama sisi (300x300)
+        cx = lebarKotak / 2;
+        cy = lebarKotak / 2;
+        
+        const titikKanan = cx + radius; 
+        const titikKiri = cx - radius;
+        
+        // Rel kereta lingkaran penuh bolak-balik
+        dPath = `M ${titikKiri},${cy} A ${radius},${radius} 0 1,1 ${titikKanan},${cy} A ${radius},${radius} 0 1,1 ${titikKiri},${cy}`;
+        
+        // Rotasi awal biar pas di atas kalau slider-nya 25% (kayak settingan awal Abang)
+        rotasiAwal = 272; 
+    } else {
+        // --- 2. JALUR UNTUK SETENGAH LINGKARAN ---
+        tinggiKotak = radius + paddingHuruf; // Kotak ceper dipotong setengah
+        cx = lebarKotak / 2;
+        cy = tinggiKotak - (paddingHuruf / 2);
+        
+        const titikKanan = cx + radius; 
+        const titikKiri = cx - radius;
+        
+        // Rel kereta jembatan busur melengkung saja
+        dPath = `M ${titikKiri},${cy} A ${radius},${radius} 0 0,1 ${titikKanan},${cy}`;
+        rotasiAwal = 0; // Setengah lingkaran pake poros tengah busur
+    }
+
+    // Gabungkan setelan putaran slider dengan rotasi awal masing-masing mode
+    const totalRotasi = rotasiAwal + (isPenuh ? 0 : putar);
+    const startOffsetValue = isPenuh ? `${putar}%` : "50%";
+
+    // Cetak SVG dinamis menyesuaikan isi tinggiKotak yang dipilih
+    const cetakanSVG = `
+        <svg id="svg-tulisan" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${lebarKotak} ${tinggiKotak}" width="${lebarKotak}" height="${tinggiKotak}">
+            <defs>
+                <path id="jalur-lingkaran" d="${dPath}" fill="none" stroke="none" />
+            </defs>
+            <g transform="rotate(${totalRotasi} ${cx} ${cy})">
+                <text font-family="${jenisFont}" font-size="${fontSize}" fill="black" font-weight="bold">
+                    <textPath href="#jalur-lingkaran" startOffset="${startOffsetValue}" text-anchor="middle">
+                        ${teks}
+                    </textPath>
+                </text>
+            </g>
+        </svg>
+    `;
+
+    document.getElementById('wadah-svg').innerHTML = cetakanSVG;
+}
+
+        // Fungsi kurir paket kilat (postMessage) untuk melempar hasil ke ruko sebelah (index.html)
+        function kirimKeKanvasUtama() {
+            const wadahSVG = document.getElementById('wadah-svg').innerHTML;
+            
+            // Bungkus kode SVG murni tadi menjadi format Gambar (Base64 DataURL) 
+            // Biar bisa dibaca sebagai file gambar (.img-item) biasa di kanvas utama Abang
+            const blob = new Blob([wadahSVG], {type: 'image/svg+xml;charset=utf-8'});
+            const URLGambar = URL.createObjectURL(blob);
+
+            // Lempar paket data menembus dinding iframe ke index.html
+            window.parent.postMessage({
+                type: 'TEKS_MELINGKAR',
+                imgData: URLGambar
+            }, window.location.origin);
+        }
+
+        // Jalankan sekali pas pertama kali file dibuka biar gak kosong
+        updateTeksMelingkar();
+      
+      // Fungsi Buka - Tutup Dropdown Custom
+function toggleDropdownFont() {
+    const boxPilihan = document.getElementById('custom-select-options');
+    if (boxPilihan.style.display === 'none' || boxPilihan.style.display === '') {
+        boxPilihan.style.display = 'block';
+    } else {
+        boxPilihan.style.display = 'none';
+    }
+}
+
+// Fungsi Pas User Nge-klik Salah Satu Font
+function pilihFontCustom(nilaiFont, namaTampilan) {
+    // 1. Ganti value di input hidden biar fungsi updateTeksMelingkar() gak bingung
+    document.getElementById('select-font').value = nilaiFont;
+    
+    // 2. Ganti teks di tombol utama biar kelihatan font apa yang lagi aktif
+    document.getElementById('font-terpilih-nama').innerText = namaTampilan;
+    
+    // 3. Tutup kembali list pilihannya
+    document.getElementById('custom-select-options').style.display = 'none';
+    
+    // 4. Jalankan fungsi andalan kita buat ngerakit ulang SVG melingkarnya!
+    updateTeksMelingkar();
+}
+
+// Tambahan Pengaman: Kalau user nge-klik di luar area dropdown, tutup otomatis list-nya
+window.addEventListener('click', function(e) {
+    const selectHead = document.getElementById('custom-select-head');
+    const boxPilihan = document.getElementById('custom-select-options');
+    if (selectHead && boxPilihan && !selectHead.contains(e.target) && !boxPilihan.contains(e.target)) {
+        boxPilihan.style.display = 'none';
+    }
+});
+    </script>
+</body>
+</html>
