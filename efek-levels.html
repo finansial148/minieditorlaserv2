@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kamar Gelap Laser - Efek Levels HD</title>
+  <link rel="stylesheet" href="cropper.min.css">
+<script src="cropper.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: sans-serif; background: #2c3e50; color: white; text-align: center; padding: 20px; }
+        .wadah { max-width: 600px; margin: auto; background: #34495e; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        canvas { max-width: 100%; height: auto; background: #cbd5e1; border-radius: 5px; margin-top: 15px; }
+        .kontrol { margin: 20px 0; text-align: left; }
+        .kontrol label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .slider { width: 100%; margin-bottom: 15px; cursor: pointer; }
+        .btn { width: 100%; padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 16px;}
+        .btn-pilih { background: #3498db; color: white; }
+        .btn-impor { background: #2ecc71; color: white; display: none; }
+      
+      canvas { 
+    width: 100%; /* Memaksa canvas melebar maksimal mengikuti kotak wadah */
+    height: auto; 
+    background: #cbd5e1; 
+    border-radius: 5px; 
+}
+      /* Kunci gambar di area cropper supaya anti pop-up pas ditekan lama di HP */
+.cropper-view-box img, 
+.cropper-canvas img,
+#gbr-sambilan-crop,
+#image-to-crop {
+    -webkit-touch-callout: none !important; /* Mematikan menu pop-up download/salin di iOS/Android */
+    -webkit-user-select: none !important;    /* Mematikan seleksi teks/gambar */
+    -khtml-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    pointer-events: none; /* Opsional: membuat gambar mengabaikan klik kanan gaib, tapi cropper tetep fungsi */
+}
+    </style>
+</head>
+<body>
+<div style="position: fixed;background:#34495e;z-index: 9;top: 0;left: 0;width: 100%;height: 100vh;overflow: overlay;">
+<div class="wadah">
+
+    
+    <canvas id="canvas-levels"></canvas>
+    
+    <div class="kontrol">
+      <label for="range-zoom">Ukuran Gambar (Zoom): <span id="val-zoom">100%</span></label>
+<input type="range" id="range-zoom" class="slider" min="10" max="300" value="100">
+      
+        <label for="range-threshold">Threshold (Kepekatan Hitam): <span id="val-threshold">128</span></label>
+        <input type="range" id="range-threshold" class="slider" min="0" max="255" value="128">
+
+        <label for="range-brightness">Kecerahan (Brightness): <span id="val-brightness">0</span></label>
+        <input type="range" id="range-brightness" class="slider" min="-100" max="100" value="0">
+      
+        <label for="range-garis">Mode Garis (Outline): <span id="val-garis">0</span></label>
+        <input type="range" id="range-garis" class="slider" min="0" max="10" value="0">
+    </div>
+    <div style="display: flex;gap: 10px;justify-content: center;">
+      <div>
+          <input type="file" id="input-gambar" accept="image/*" style="display: none;">
+    <button class="btn btn-pilih" onclick="document.getElementById('input-gambar').click()"><i class="fas fa-image"></i> Pilih Gambar</button>  
+      </div>
+    <div style="display: flex; gap: 10px;">
+    <button id="btn-kirim" onclick="kirimdong()" class="btn btn-impor" style="flex: 1;">Impor</button>
+    <button id="btn-save-langsung" class="btn" style="flex: 1; background: #e67e22; color: white; display: none;">Simpan</button>
+</div>
+  </div>
+</div>
+<div id="modal-nama-file" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 25px; border-radius: 15px; text-align: center; width: 80%; max-width: 300px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); color: #333;">
+        <i id="modalIcon" class="fas fa-image" style="font-size: 40px; color: rgb(52, 152, 219); margin-bottom: 15px;"></i>
+        <h3 id="modalJudul" style="margin:10px 0; font-family:sans-serif;">Simpan Gambar PNG</h3>
+        
+        <div id="modalPesan" style="color:#666; font-size:14px;">
+            <input type="text" id="inputNamaFileKeren" placeholder="Masukkan nama file" style="width: 100%; padding: 10px; background: #f5f5f5; border: 1px solid #ccc; border-radius: 8px; color: #333; font-size: 16px; box-sizing: border-box; text-align: center;">
+        </div>
+        
+        <div id="wadahTombol" style="display:flex; gap:10px; margin-top:20px;">
+            <button onclick="tutupModalKerenDoang()" style="flex: 1; background: #e74c3c; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px;">Batal</button>
+            <button onclick="eksekusiJepretPNGKeren()" style="flex: 1; background: #3498db; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px;">Download PNG</button>
+        </div>
+    </div>
+</div>
+  <div id="modalCropperMandiri" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; justify-content:center; align-items:center; padding:15px; box-sizing:border-box;">
+    <div style="background:#34495e; padding:20px; border-radius:10px; width:100%; max-width:450px; box-shadow:0 4px 15px rgba(0,0,0,0.5);">
+        <h3 style="margin-top:0; color:#f1c40f; text-align:center;">Potong Gambar Pelanggan</h3>
+        
+        <div style="max-width:100%; height:250px; background:#2c3e50; overflow:hidden; border-radius:5px;">
+            <img id="gbr-sambilan-crop" src="" style="max-width:100%; display:block;">
+        </div>
+        
+        <div style="margin-top:15px; display:flex; justify-content:space-between; gap:10px;">
+            <button onclick="eksekusiPotongMandiri()" style="flex:1; padding:12px; background:#28a745; color:#fff; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">OK, PAS!</button>
+            <button onclick="batalPotongMandiri()" style="flex:1; padding:12px; background:#dc3545; color:#fff; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">BATAL</button>
+        </div>
+    </div>
+</div>
+  </div>
+<script>
+const inputGambar = document.getElementById('input-gambar');
+const canvas = document.getElementById('canvas-levels');
+const ctx = canvas.getContext('2d');
+
+const sliderThreshold = document.getElementById('range-threshold');
+const sliderBrightness = document.getElementById('range-brightness');
+const sliderGaris = document.getElementById('range-garis');
+const sliderZoom = document.getElementById('range-zoom'); // Slider baru
+const btnKirim = document.getElementById('btn-kirim');
+
+let gambarAsli = new Image();
+
+// 1. Baca Gambar Pas Diupload
+let cropperMandiri;
+const modalCropMandiri = document.getElementById('modalCropperMandiri');
+const imgSambilan = document.getElementById('gbr-sambilan-crop');
+
+// 1. Baca Gambar Pas Diupload -> Lempar ke Modal Potong Dulu
+inputGambar.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        // Tampilin modal potong mandiri ala ruko
+        imgSambilan.src = event.target.result;
+        modalCropMandiri.style.display = 'flex';
+
+        // Nyalakan mesin cropper-nya
+        if (cropperMandiri) cropperMandiri.destroy();
+        cropperMandiri = new Cropper(imgSambilan, {
+            viewMode: 1,
+            aspectRatio: NaN, // Bebas sesuka hati motongnya
+            background: true
+        });
+    }
+    reader.readAsDataURL(file);
+});
+
+// 2. FUNGSI EKSEKUSI POTONG (Copy-Paste Logika Juara Milik Abang)
+function eksekusiPotongMandiri() {
+    try {
+        if (!cropperMandiri) return;
+
+        // Ambil hasil potongan dalam bentuk canvas rahasia
+        const canvasResult = cropperMandiri.getCroppedCanvas({
+            maxWidth: 10000, // Tetep kasih batas raksasa biar kualitas HD gak pecah
+            maxHeight: 10000
+        });
+        
+        const hasilGambarURL = canvasResult.toDataURL("image/png");
+      
+        // OPER HASILNYA KE GAMBAR ASLI SCRIPT UTAMA ABANG!
+        gambarAsli.src = hasilGambarURL; 
+
+    } catch (e) {
+        console.error("Error saat potong mandiri: ", e);
+    } finally {
+        batalPotongMandiri(); // Tutup modal & bersihkan
+    }
+}
+
+// Fungsi Batal / Tutup Modal
+function batalPotongMandiri() {
+    modalCropMandiri.style.display = 'none';
+    document.getElementById('input-gambar').value = ""; // Reset input file
+    if (cropperMandiri) {
+        cropperMandiri.destroy();
+        cropperMandiri = null;
+    }
+}
+
+gambarAsli.onload = function() {
+    // Set ukuran asli canvas sesuai gambar biar kualitasnya TETEP HD RAKSASA
+    canvas.width = gambarAsli.width;
+    canvas.height = gambarAsli.height;
+    
+    // Reset semua slider ke posisi default tiap ganti gambar baru
+    sliderThreshold.value = 128;
+    sliderBrightness.value = 0;
+    sliderGaris.value = 0;
+    sliderZoom.value = 100;
+    
+    prosesLevels();
+    btnKirim.style.display = 'block';
+};
+
+// 2. Fungsi Utama Manipulasi Piksel + Ukuran Gambar
+function prosesLevels() {
+    if (!gambarAsli.src) return;
+
+    const lebarCvs = canvas.width;
+    const tinggiCvs = canvas.height;
+
+    // Bersihkan canvas lama sebelum digambar ulang (biar gak numpuk pas dikecilin)
+    ctx.clearRect(0, 0, lebarCvs, tinggiCvs);
+    // Isi background putih standar biar efek hitam-putih terbaca sempurna
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, lebarCvs, tinggiCvs);
+
+    const zoomPersen = parseInt(sliderZoom.value);
+    const thres = parseInt(sliderThreshold.value);
+    const bright = parseInt(sliderBrightness.value);
+    const modeGaris = parseInt(sliderGaris.value);
+
+    // Update teks angka di layar ruko
+    document.getElementById('val-threshold').innerText = thres;
+    document.getElementById('val-brightness').innerText = bright;
+    document.getElementById('val-garis').innerText = modeGaris === 0 ? "Matang (Blok)" : modeGaris + "px";
+    document.getElementById('val-zoom').innerText = zoomPersen + "%";
+
+    // Hitung dimensi gambar baru berdasarkan nilai Slider Zoom
+    const skala = zoomPersen / 100;
+    const lebarBaru = gambarAsli.width * skala;
+    const tinggiBaru = gambarAsli.height * skala;
+
+    // Hitung posisi koordinat biar gambar TETEP DI TENGAH-TENGAH (Center) pas digedein/dikecilin
+    const posX = (lebarCvs - lebarBaru) / 2;
+    const posY = (tinggiCvs - tinggiBaru) / 2;
+
+    // Aktifkan anti-aliasing biar pas digedein tetep smooth bunderannya
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
+    // Gambar ulang fotonya dengan ukuran skala baru tepat di tengah canvas
+    ctx.drawImage(gambarAsli, posX, posY, lebarBaru, tinggiBaru);
+
+    // Ambil data piksel array gambar (RGBA) dari seluruh area canvas
+    const dataGambar = ctx.getImageData(0, 0, lebarCvs, tinggiCvs);
+    const piksel = dataGambar.data;
+    
+    // Buffer memori sambilan untuk proses pendeteksi tepi
+    const pikselSambilan = new Uint8ClampedArray(piksel);
+
+    // STEP A: Paksa semua area jadi Hitam-Putih murni dulu di memori sambilan
+    for (let i = 0; i < pikselSambilan.length; i += 4) {
+        let r = pikselSambilan[i] + bright;
+        let g = pikselSambilan[i+1] + bright;
+        let b = pikselSambilan[i+2] + bright;
+        const abuAbu = 0.299 * r + 0.587 * g + 0.114 * b;
+        let warnaBiner = (abuAbu >= thres) ? 255 : 0;
+        
+        pikselSambilan[i]     = warnaBiner;
+        pikselSambilan[i+1]   = warnaBiner;
+        pikselSambilan[i+2]   = warnaBiner;
+    }
+
+    // STEP B: Logika Deteksi Garis Luar Dalam (Outline)
+    for (let y = 0; y < tinggiCvs; y++) {
+        for (let x = 0; x < lebarCvs; x++) {
+            const indeksPusat = (y * lebarCvs + x) * 4;
+
+            if (modeGaris > 0) {
+                let rukoGaris = false;
+
+                if (x + modeGaris < lebarCvs) {
+                    const indeksKanan = (y * lebarCvs + (x + modeGaris)) * 4;
+                    if (pikselSambilan[indeksPusat] !== pikselSambilan[indeksKanan]) {
+                        rukoGaris = true;
+                    }
+                }
+                if (y + modeGaris < tinggiCvs && !rukoGaris) {
+                    const indeksBawah = ((y + modeGaris) * lebarCvs + x) * 4;
+                    if (pikselSambilan[indeksPusat] !== pikselSambilan[indeksBawah]) {
+                        rukoGaris = true;
+                    }
+                }
+
+                const warnaFinal = rukoGaris ? 0 : 255;
+                piksel[indeksPusat]     = warnaFinal;
+                piksel[indeksPusat+1]   = warnaFinal;
+                piksel[indeksPusat+2]   = warnaFinal;
+            } else {
+                piksel[indeksPusat]     = pikselSambilan[indeksPusat];
+                piksel[indeksPusat+1]   = pikselSambilan[indeksPusat+1];
+                piksel[indeksPusat+2]   = pikselSambilan[indeksPusat+2];
+            }
+        }
+    }
+
+    // Tumpahkan kembali data piksel matang ke preview canvas ruko
+    ctx.putImageData(dataGambar, 0, 0);
+}
+
+// 3. Daftarkan semua event input slider biar gerak real-time
+sliderThreshold.addEventListener('input', prosesLevels);
+sliderBrightness.addEventListener('input', prosesLevels);
+sliderGaris.addEventListener('input', prosesLevels);
+sliderZoom.addEventListener('input', prosesLevels); // Listener Zoom baru
+
+// Ganti logika tombol kirim di halaman efek-levels.html Abang pakai ini:
+// Ganti logika tombol kirim di halaman efek-levels.html Abang pakai taktik penyamaran ini:
+btnKirim.addEventListener('click', function() {
+    // 1. Ambil data gambar hitam-putih / outline yang mateng dari canvas levels
+    const dataHasil = canvas.toDataURL('image/png');
+    
+    // 2. TAKTIK PENYAMARAN: Kita kirim pakai type 'TEKS_MELINGKAR' biar ditangkap 
+    // oleh sistem editor utama sebagai objek hidup yang bisa digeser-geser!
+    window.parent.postMessage({
+        type: 'TEKS_MELINGKAR',  // <--- Menyamar jadi ini biar editor utama gak curiga
+        imgData: dataHasil       // <--- Masukin data gambar levels kita ke sini
+    }, '*'); // Pakai '*' biar fleksibel atau bisa ganti window.location.origin bawaan Abang
+    
+ //   alert('🎉 Jreeeng! Gambar hitam-putih sukses dikirim ke editor utama sebagai objek hidup!');
+});
+
+  
+  // Daftarkan tombol save baru
+const btnSaveLangsung = document.getElementById('btn-save-langsung');
+const modalNamaFile = document.getElementById('modal-nama-file');
+const inputNamaFile = document.getElementById('inputNamaFileKeren');
+
+// Pastikan tombol Save muncul saat gambar sukses di-load (barengan sama tombol kirim)
+// Tambahkan baris ini di dalam fungsi `gambarAsli.onload`:
+// btnSaveLangsung.style.display = 'block';
+const fungsiOnloadLama = gambarAsli.onload;
+gambarAsli.onload = function() {
+    if (typeof fungsiOnloadLama === "function") fungsiOnloadLama();
+    btnSaveLangsung.style.display = 'block'; // Tampilkan tombol save ruko
+};
+
+// 1. Fungsi memicu munculnya modal ganti nama
+btnSaveLangsung.addEventListener('click', function() {
+    // Kasih nama bawaan otomatis biar Abang gak capek ngetik kalau lagi buru-buru
+    inputNamaFile.value = 'Hasil-Levels-Laser'; 
+    modalNamaFile.style.display = 'flex';
+    
+    // Otomatis fokus ke input teks biar tinggal ketik
+    setTimeout(() => inputNamaFile.select(), 100); 
+});
+
+// 2. Fungsi Tutup Modal Batal
+function tutupModalKerenDoang() {
+    modalNamaFile.style.display = 'none';
+}
+  
+function kirimdong() {
+  window.parent.postMessage({ type: 'TUTUP_MODAL_LEVELS_GAIB' }, '*');
+}
+  
+// 3. Eksekusi Download Gambar Sesuai Nama yang Diinput
+function eksekusiJepretPNGKeren() {
+    // Ambil nama file dari input, kalau kosong otomatis pakai cadangan
+    let namaFileBaru = inputNamaFile.value.trim();
+    if (namaFileBaru === "") {
+        namaFileBaru = "Hasil-Levels-Laser";
+    }
+
+    // Ambil data gambar dari canvas levels yang udah HD digedein/dikecilin tadi
+    const dataHasilPNG = canvas.toDataURL('image/png');
+
+    // Proses download gaib khas ruko kita
+    const linkDownload = document.createElement('a');
+    linkDownload.download = namaFileBaru + '.png';
+    linkDownload.href = dataHasilPNG;
+    
+    document.body.appendChild(linkDownload);
+    linkDownload.click();
+    document.body.removeChild(linkDownload);
+
+    // Sukses, tutup modalnya!
+    tutupModalKerenDoang();
+  
+  window.parent.postMessage({ type: 'TUTUP_MODAL_LEVELS_GAIB' }, '*');
+}
+  
+// Kuping Pengintai Aksi Paste (Ctrl + V) Gambar Langsung di Halaman Efek Levels
+window.addEventListener('paste', function(e) {
+    // Pastikan ada data yang di-paste
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    
+    for (let i = 0; i < items.length; i++) {
+        // Kita hanya tangkap kalau yang di-paste berbentuk File Gambar (image)
+        if (items[i].type.indexOf('image') !== -1) {
+            const fileGambar = items[i].getAsFile();
+            
+            // Konversi file gambar jadi URL base64 biar bisa dibaca browser ruko
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                // 1. Ambil elemen gambar sambilan cropper Abang
+                const imgSambilan = document.getElementById('gbr-sambilan-crop');
+                const modalCropMandiri = document.getElementById('modalCropperMandiri');
+                
+                if (imgSambilan && modalCropMandiri) {
+                    imgSambilan.src = event.target.result;
+                    modalCropMandiri.style.display = 'flex';
+
+                    // 2. Nyalakan ulang mesin cropper mandiri bawaan Abang
+                    if (cropperMandiri) cropperMandiri.destroy();
+                    cropperMandiri = new Cropper(imgSambilan, {
+                        viewMode: 1,
+                        aspectRatio: NaN, // Bebas motongnya
+                        background: true
+                    });
+                }
+            };
+            
+            reader.readAsDataURL(fileGambar);
+            e.preventDefault(); // Stop aksi default browser biar gak tabrakan
+            break; // Keluar loop kalau udah dapet gambarnya
+        }
+    }
+});
+</script>
+
+</body>
+</html>
