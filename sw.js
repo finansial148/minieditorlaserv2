@@ -12,30 +12,42 @@ const urlsToCache = [
   './melingkar.html'
 ];
 
-// Install Service Worker & Simpan file ke Memori HP/PC
+// 1. Install Service Worker & Simpan file ke Memori HP/PC
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(urlsToCache);
     })
   );
-  // Langsung aktifkan service worker baru tanpa nunggu browser ditutup
   self.skipWaiting(); 
 });
 
-// Ambil file dari Memori kalau lagi Offline, dan amankan fetch online
+// 🚀 SUNTIKAN SAKTI 1: FUNGSI PENGGUSUR CACHE LAMA (WAJIB ADA!)
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cache => {
+          // Kalau ada cache nama lama (kayak v6, v5, dll), langsung Bantai & Hapus!
+          if (cache !== CACHE_NAME) {
+            console.log(' Memori jadul ' + cache + ' resmi digusur dari ruko!');
+            return caches.delete(cache);
+          }
+        })
+      );
+    }).then(() => self.clients.claim()) // Paksa semua halaman detik ini juga pakai v7!
+  );
+});
+
+// 2. Ambil file dari Memori kalau lagi Offline
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request).then(response => {
-      // 1. Kalau filenya ada di memori offline (index.html, cropper, dll), langsung pakai.
       if (response) {
         return response;
       }
-      
-      // 2. Kalau gak ada di memori, ambil online tapi dikasih pengaman (.catch) biar gak bikin macet
       return fetch(event.request).catch(err => {
         console.log("Aset luar gagal di-fetch, tapi aplikasi tetep aman jalan terus!");
-        // Kembalikan respon kosong biar browser gak error merah merona
         return new Response(''); 
       });
     })
