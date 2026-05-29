@@ -17,6 +17,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <title>minieditor laser v2</title>
     <style>
       html, body {
@@ -390,7 +391,7 @@ display:flex;flex-direction: column;
     border: 1px solid #0000003b;
     padding: 5px;
     border-radius: 5px;
-        right: 5px;background: #00000047}
+        right: 5px;background: #ffffff}
       i.fa.fa-window-close {
     position: absolute;cursor: pointer;
     margin-left: 5px;
@@ -413,7 +414,7 @@ display:flex;flex-direction: column;
       .kotak-hori{border: 1px solid #00000047;padding: 3px;overflow: overlay;max-width: 320px;margin: auto;background: #d6d6d6;}
       .kotak-rota {
     border: 1px solid #00000045;
-    margin: 2px 0px;
+    margin: 7px 0px;
 }
       .kotak-hori button{
     display: flex;cursor: pointer;
@@ -456,6 +457,20 @@ display:flex;flex-direction: column;
     outline: 2px dashed #3498db;
 }
       
+ /* Kunci gambar di area cropper supaya anti pop-up pas ditekan lama di HP */
+.cropper-view-box img, 
+.cropper-canvas img,
+#imageTemp,
+#imageTemp {
+    -webkit-touch-callout: none !important; /* Mematikan menu pop-up download/salin di iOS/Android */
+    -webkit-user-select: none !important;    /* Mematikan seleksi teks/gambar */
+    -khtml-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    pointer-events: none; /* Opsional: membuat gambar mengabaikan klik kanan gaib, tapi cropper tetep fungsi */
+}
+      
 button.miring1 {
     width: 40px;
     height: 40px;
@@ -486,7 +501,7 @@ button.miring1 {
   <style id="canvas-Edit"></style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
   
@@ -530,7 +545,7 @@ button.miring1 {
 </div>     
    
     <button  id="bukaFile" onclick="bukainfile()"><i class="fa fa-file" aria-hidden="true"></i><span> File</span></button>
-    <h2 style="text-align: center; color:#ffffff;margin: 0;font-size: 15px;"> Mini Editor Laser v.2</h2> 
+    <h2 id="banner-judul" style="text-align: center; color:#ffffff;margin: 0;font-size: 15px;height:40px;"> Mini Editor Laser v.2</h2>
     <div class="kotak-layers">
     <div style="max-width: 800px;display: flex;flex-direction: column;align-items: flex-end;margin: auto;">
       <div style="position: absolute;z-index:99998;right: 5px;width: 85px;">
@@ -547,7 +562,7 @@ button.miring1 {
   </div>
     </div>
    
- <div id="menuFile" style="display: none;position: fixed;z-index: 9;text-align:left;border: 1px solid rgba(0, 0, 0, 0.17);padding: 15px;background: white;top: 30px;width: 150px;">
+ <div id="menuFile" style="display: none;position: fixed;z-index: 999999;text-align:left;border: 1px solid rgba(0, 0, 0, 0.17);padding: 15px;background: white;top: 30px;width: 150px;">
   
   <button onclick="simpanPNG()"><i class="fas fa-image"></i> Simpan PNG</button>
   <button onclick="downloadPDF()"><i aria-hidden="true" class="fa fa-file-pdf-o"></i> Simpan pdf</button>
@@ -571,7 +586,7 @@ button.miring1 {
     
     <div id="ruler-samping" style="/*position: absolute;*/ top: 25px; left: 0; bottom: 0; width: 20px; border-right: 1px solid #3498db; overflow: hidden;"></div>
 
-    <canvas id="layer-coret" style="position: absolute; top: 0; left: 0; z-index: 5; pointer-events: none;" width="1122" height="450"></canvas>
+    <canvas id="layer-coret" style="position: absolute; top: 0; left: 0; z-index:99; pointer-events: none;" width="1122" height="450"></canvas>
 </div>
                 <img id="logo-geser" class="img-item" src="" draggable="false" style="display: none; position: absolute; cursor: move; width: 150px; top: 20px; left: 20px; user-select: none;">
                 <div id="teks-geser" draggable="false" style="position: absolute; cursor: move; top: 200px; left: 20px; font-size: 40px; color: black; white-space: nowrap; user-select: none; font-family: Arial;">
@@ -686,6 +701,21 @@ button.miring1 {
   <button id="expki" onclick="tambahTeksBaru()" style="display:none;border:1px solid #00000087;">Kirim</button>
 </div>
   </div>
+  
+<div id="modal-levels" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index:9999999; justify-content: center; align-items: center;">
+    <div style="background: #34495e; width: 99%; max-width: 650px; height: 100vh; border-radius: 10px; padding:3px; position: relative; display: flex; flex-direction: column;">
+        <button onclick="tutupModalLevels()" style="position: absolute; top: 20px; right: 10px; background: #e74c3c; color: white; border: none; border-radius: 5px; padding: 5px 10px; cursor: pointer; font-weight: bold; z-index: 10;">X Tutup</button>
+        <div id="isi-iframe-levels" style="flex: 1; width: 100%; height: 100%;">
+      </div>
+    </div>
+</div>   
+ <div id="modal-photo" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index:9999999; justify-content: center; align-items: center;">
+    <div style="background: #34495e; width: 99%; max-width: 650px; height: 100vh; border-radius: 10px; padding:3px; position: relative; display: flex; flex-direction: column;">
+        <button onclick="tutupModalphoto()" style="position: absolute; top: 10px; right: 10px; background: #e74c3c; color: white; border: none; border-radius: 5px; padding: 5px 10px; cursor: pointer; font-weight: bold; z-index: 10;">X Tutup</button>
+        <div id="isi-iframe-photo" style="flex: 1; width: 100%; height: 100%;">
+      </div>
+    </div>
+</div>     
   <div style="position: fixed;bottom:0;z-index: 999;left: 0;width: 100%;">
     <div style="display: flex;max-width: 800px;justify-content: space-between;margin: auto;align-items: center;background: #999999;">
 <div id="pinterin" style="display:none;width: 80%;">
@@ -750,7 +780,6 @@ button.miring1 {
     <div class="option" style="font-family: 'Smooch Sans';" onclick="pilihFont('Smooch Sans', 'Smooch Sans')">Smooch Sans</div>
     <div class="option" style="font-family: 'Ramabhadra';" onclick="pilihFont('Ramabhadra', 'Ramabhadra')">Ramabhadra</div>
 </div>
-  <button id="tGbrclos" class="tGbrco" style="border:0;"><i class="fa fa-window-close" aria-hidden="true" onclick="tutupGbr()" style="top: 0;"></i></button>
 </div>
       <div id="but-close" style="display:none;">"Mencoret"</div>
     <div class="kotak-rota" style="display: flex;gap: 5px;"> 
@@ -776,11 +805,15 @@ button.miring1 {
 	</div>
      </div>
 	 <div id="nyoret" style="display:none;">
+       <div id="kursor-pensil-gaib" style="position: fixed; pointer-events: none; display: none; z-index: 9999; color: #e74c3c; font-size: 24px; transition: transform 0.05s linear;">
+    <i class="fa fa-paint-brush" aria-hidden="true"></i>
+</div>
         <button onclick="aktifkanCoret()" id="btn-pensil" title="Corat-coret"><i class="fa fa-paint-brush" aria-hidden="true"></i></button>
         <button onclick="aktifkanPenghapus()" id="btn-penghapus" title="Penghapus per garis"><i class="fas fa-eraser"></i></button>
+       <button onclick="aktipinNone()" id="btn-ngumpet" title="Penghapus ngumpet">None</button>
         <button onclick="hapusCoretan()" title="Hapus Semua Coretan" style="color: #e74c3c;"><i class="fas fa-trash-alt"></i></button>
       </div>
-      <div class="rotasi" style="flex-direction: column; gap: 5px;background: #ffffff63;width:90%;">
+      <div class="rotasi" style="flex-direction: column; gap: 5px;background: #ffffff;width:90%;">
         <span>Rotate<i class="fa fa-window-close" aria-hidden="true" onclick="tutupKolom('editarget')" style="position: relative;float: right;"></i></span>
         <span style="display: flex;align-items: center;gap: 5px;">
             <i class="fas fa-redo" style="font-size: 14px;"></i>
@@ -788,7 +821,7 @@ button.miring1 {
     <input type="range" id="slider-rotasi" min="-180" max="180" value="0" style="width:90%;">
         </span>
         </div>	  
-      <div class="sliderukuran" style="flex-direction: column; gap: 5px;background: #ffffff63;width:90%;">
+      <div class="sliderukuran" style="flex-direction: column; gap: 5px;background: #ffffff;width:90%;">
         <span>Width<i class="fa fa-window-close" aria-hidden="true" onclick="tutupKolom('editarget')" style="position: relative;float: right;"></i></span>
             <span style="display: flex;align-items: center;gap: 5px;">
               <i class="fas fa-text-height" style="font-size: 14px;"></i>
@@ -803,17 +836,28 @@ button.miring1 {
       <button onclick="tutupKolom('SimpenanImg')"><i class="fas fa-image"></i><span>Pilih gambar</span></button>
       <button onclick="tutupKolom('ketik')"><i class="far fa-keyboard" aria-hidden="true"></i><span>Ketik</span></button>
       <button  onclick="toggEmot()"><w>♞</w><span>Logo</span></button>
-      <button onclick="aktifkanCoret()"><i class="fa fa-paint-brush" aria-hidden="true"></i><span>Coret</span></button>
+      <button onclick="kotakCoretan()"><i class="fa fa-paint-brush" aria-hidden="true"></i><span>Coret</span></button>
       <button id="togMenuk" onclick="toggleMenu()" class="menuk"><i class="fas fa-shapes"></i><span>Garis</span></button>
-     <div class="carigambar">
+     <div class="carigambar" style="background: white;">
       <input type="text" id="inputTopik" placeholder="Ketik gambar...">
 <button onclick="cariKeGoogle()" style="padding: 0px 5px;font-weight:bold;cursor: pointer;">Cari</button>
-     </div>   <div onclick="tutpKolm()" class="SimpenanImg" style="align-items: center;
-    gap: 10px;">
-      <div id="galeri-user" style="display:flex; overflow-x:auto; gap:10px; margin-top:10px; background:#eee; padding:10px; border-radius:5px;">
+     </div>   
+        <div class="SimpenanImg" style="align-items: center;gap: 10px;flex-direction: column;background: white;">
+          <div style="width: 100%;">
+            <button onclick="bukaModalLevels()" style="padding: 10px 15px;border: 1px solid #00000047;border-radius: 5px;cursor: pointer;">
+    <i class="fa fa-shield" aria-hidden="true" style="color: black;"></i> Filter Levels
+</button>
+            <button onclick="bukaModalphoto()" style="padding: 10px 15px;border: 1px solid #00000047;border-radius: 5px;cursor: pointer;">
+    <i aria-hidden="true" class="fa fa-user" style="color: black;"></i> Bitmap
+</button>
+            <button onclick="tutpKolm()" style="float: right;">X</button>
+          </div>
+          <div style=" display: flex;gap: 10px">
+      <div id="galeri-user" style="display:flex; overflow-x:auto; gap:10px;background:#eee; padding:10px; border-radius:5px;">
     <small style="color:gray;">Logo yang pernah dipake muncul di sini...</small>
 </div>
          <button style="border:1px solid #00000047;background: white;"><label for="upload-logo" title="Upload Gambar"><i class="fas fa-mobile-alt"></i><span>Ambil digaleri</span></label><input type="file" id="upload-logo" accept="image/*" onchange="loadLogo(event)" style="display:none;"></button>
+       </div>   
     </div>
         
       <div class="ketik">
@@ -1742,13 +1786,19 @@ cvs.width = 1122; // Samakan dengan lebar #canvas-editor Abang
 cvs.height = 450; // Samakan dengan tinggi #canvas-editor Abang
 
 let modePenghapus = false; // Variabel baru buat nandain lagi hapus atau enggak
+    
+function kotakCoretan() {
+    document.getElementById('nyoret').style.display = 'flex';
+} 
 
 function aktifkanCoret() {
     modeCoret = !modeCoret;
     modePenghapus = false; // Kalau pensil diklik, mode penghapus harus mati
+    modengumpet = false;
     
     const btnPensil = document.getElementById('btn-pensil');
     const btnHapus = document.getElementById('btn-penghapus'); // Asumsi ada tombol penghapus
+    const butNon = document.getElementById('btn-ngumpet');
     const butClose = document.getElementById('but-close');
     const ktkNyoret = document.getElementById('nyoret');
     
@@ -1757,13 +1807,14 @@ function aktifkanCoret() {
         butClose.style.display = "block";
         ktkNyoret.style.display = "flex";
         if(btnHapus) btnHapus.style.background = ""; // Matikan warna tombol hapus
-        
         cvs.style.pointerEvents = "auto";
         cvs.style.cursor = "crosshair";
         
         // Atur warna tinta ke Hitam (buat laser)
         ctx.strokeStyle = "#000000"; 
         ctx.lineWidth = 2;
+      
+        document.getElementById('layer-coret').style.display = "block";    
     } else {
         btnPensil.style.background = "";
         butClose.style.display = "none";
@@ -1775,6 +1826,7 @@ function aktifkanCoret() {
 function aktifkanPenghapus() {
     modePenghapus = !modePenghapus;
     modeCoret = false; // Kalau penghapus diklik, mode pensil biasa mati
+    modengumpet = false;
     
     const btnPensil = document.getElementById('btn-pensil');
     const btnHapus = document.getElementById('btn-penghapus');
@@ -1797,7 +1849,23 @@ function aktifkanPenghapus() {
         cvs.style.pointerEvents = "none";
       document.getElementById('nyoret').style.display = "none";
     }
-}  
+}
+    
+function aktipinNone() {
+  modengumpet = !modengumpet;
+    modeCoret = false; // Kalau penghapus diklik, mode pensil biasa mati
+      const butNon = document.getElementById('btn-ngumpet');
+    
+    if (modengumpet) {
+        butNon.style.background = "#e74c3c";
+document.getElementById('layer-coret').style.display = "none";
+    } else {
+      butNon.style.background = "#00b8ff";
+      document.getElementById('layer-coret').style.display = "block";
+    }
+  
+        
+}
 
 // Logika Menggambar
 cvs.addEventListener('mousedown', startDraw);
@@ -1970,6 +2038,7 @@ function bukainfile() {
         btn.style.color = "";
     }
   document.getElementById("untukelas").innerHTML = ".resizer{display:none;}";
+  document.getElementById('canvas-Edit').innerHTML = "";
 }
     
  //Cari gambar   
@@ -2224,7 +2293,7 @@ async function eksekusiJepretPNGKeren() {
 
     try {
         // --- PROSES JADI GAMBAR HD (SCALE 3) ---
-        const canvas = await html2canvas(area, { scale: 3, backgroundColor: "#ffffff" });
+        const canvas = await html2canvas(area, { scale: 4, backgroundColor: "#ffffff" });
         
         const link = document.createElement('a');
         link.download = `Preview-${namaFilePelanggan}.png`;
@@ -2368,6 +2437,7 @@ function toggleGrid() {
     canvas.classList.toggle('pake-grid');
   
   document.getElementById("canvas-Edit").innerHTML = "";
+  document.getElementById("canvas-editor").style.background = "";
 }
     
 //PENGGARIS-------
@@ -2498,6 +2568,7 @@ function tambahTeksOtomatis(isiTeks) {
     
 //MODEL LAYAR LEBAR
 function modeLayarLebar() {
+    const banner = document.getElementById('banner-judul');
     const elem = document.documentElement;
     const ikon = document.querySelector('.btn-fullscreen-sultan i');
 
@@ -2507,10 +2578,12 @@ function modeLayarLebar() {
         
         // Ganti ikon jadi panah ngecil (Compress)
         ikon.className = "fas fa-compress";
+        banner.style.height = "";
     } else {
         if (document.exitFullscreen) { document.exitFullscreen(); }
         // Ganti ikon balik jadi panah lebar (Expand)
         ikon.className = "fas fa-expand";
+      banner.style.height = "40px";
     }
 }
     
@@ -2557,6 +2630,70 @@ function tutpKolm() {
 document.getElementById("untukelas").innerHTML = "";
 }
     
+// IFRAME GRAFIR PHOTO
+ function bukaModalphoto() {
+    const modal = document.getElementById('modal-photo');
+    const areaIframe = document.getElementById('isi-iframe-photo');
+    
+    if (modal && areaIframe) {
+        modal.style.display = 'flex';
+        // Panggil file efek-levels.html Abang ke dalam iframe melayang
+        areaIframe.innerHTML = `<iframe src=grafir-foto.html?v=${Date.now()}" style="width:100%; height:100%; border:none;"></iframe>`;
+    }
+}
+
+// 2. Fungsi buat nutup modal
+function tutupModalphoto() {
+    const modal = document.getElementById('modal-photo');
+    const areaIframe = document.getElementById('isi-iframe-photo');
+    if (modal) {
+        modal.style.display = 'none';
+        if (areaIframe) areaIframe.innerHTML = ''; // Hancurkan biar gak makan RAM HP
+    }
+}
+    
+window.addEventListener('message', function(e) {
+  
+      if (e.data && e.data.type === 'TUTUP_MODAL_LEVELS_GAIB') {
+        if (typeof tutupModalphoto === "function") {
+            tutupModalphoto(); // Langsung bikin iframenya 'none' alias ngumpet lagi!
+        }
+    }
+});
+
+//IFRAME EFEK LEVELS
+// 1. Fungsi buat ngebuka Iframe Levels
+function bukaModalLevels() {
+    const modal = document.getElementById('modal-levels');
+    const areaIframe = document.getElementById('isi-iframe-levels');
+    
+    if (modal && areaIframe) {
+        modal.style.display = 'flex';
+        // Panggil file efek-levels.html Abang ke dalam iframe melayang
+        areaIframe.innerHTML = `<iframe src=efek-levels.html?v=${Date.now()}" style="width:100%; height:100%; border:none;"></iframe>`;
+    }
+}
+
+// 2. Fungsi buat nutup modal
+function tutupModalLevels() {
+    const modal = document.getElementById('modal-levels');
+    const areaIframe = document.getElementById('isi-iframe-levels');
+    if (modal) {
+        modal.style.display = 'none';
+        if (areaIframe) areaIframe.innerHTML = ''; // Hancurkan biar gak makan RAM HP
+    }
+}   
+
+// 3. KUNCI UTAMA: Kuping Pengintai (EventListener) buat nangkep lemparan gambar dari Iframe
+window.addEventListener('message', function(e) {
+  
+      if (e.data && e.data.type === 'TUTUP_MODAL_LEVELS_GAIB') {
+        if (typeof tutupModalLevels === "function") {
+            tutupModalLevels(); // Langsung bikin iframenya 'none' alias ngumpet lagi!
+        }
+    }
+});
+    
 //IFRAME HARGA GRAFIR
 function bukaModalKalkulator() {
     const modal = document.getElementById('modal-kalkulator');
@@ -2566,14 +2703,65 @@ function bukaModalKalkulator() {
         // Muncukin modalnya di tengah layar
         modal.style.display = 'flex';
         
-        // Panggil file kalkulator.html ke dalam iframe
-        // Catatan: Pastikan file kalkulator.html Abang nanti satu folder ya!
+        // Panggil file cek-harga-grafir.html tanpa bawa data apa-apa dulu!
         areaIframe.innerHTML = `<iframe src="kalkulator.html" style="width:100%; height:100%; border:none;"></iframe>`;
+        
+        console.log("🚀 Iframe kalkulator kebuka kosong, nungguin iframe-nya teriak minta gambar...");
     }
+  
+  document.getElementById('canvas-Edit').innerHTML = ".canvas-editor {background: no-repeat;}";
 }
  
 // Jalankan pengecekan saat Editor dibuka
 document.addEventListener('DOMContentLoaded', cekhargagrafir);
+    
+// Kuping Pengintai 'v2.html' (Nunggu teriakan dari Iframe Kalkulator Harga)
+window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'MINTA_GAMBAR_PNG') {
+        console.log("📣 Bapak Editor siap-siap motret resik...");
+
+        const areaKanvas = document.getElementById('canvas-editor');
+        const rulerAtas = document.getElementById('ruler-atas');
+        const rulerSamping = document.getElementById('ruler-samping');
+        const layerCoret = document.getElementById('layer-coret');
+
+        if (!areaKanvas) return;
+
+        // --- 🎨 TAKTIK SAKTI ABANG: Bersihkan background & sembunyikan garis cm ---
+        const backgroundAsli = areaKanvas.style.background; // Catat warna/tema asli biar bisa dikembalikan
+        areaKanvas.style.background = "white"; // Paksa jadi putih bersih tanpa garis bantu ruko
+        
+        if (rulerAtas) rulerAtas.style.visibility = 'hidden';
+        if (rulerSamping) rulerSamping.style.visibility = 'hidden';
+
+        // JEP RET!
+        html2canvas(areaKanvas, {
+            backgroundColor: '#ffffff',
+            useCORS: true,
+            logging: false
+        }).then(function(canvasHasilPotret) {
+            const gambarBersihURL = canvasHasilPotret.toDataURL("image/png");
+
+            // Tembak balik ke iframe kalkulator
+            if (event.source && typeof event.source.postMessage === 'function') {
+                event.source.postMessage({
+                    type: 'KIRIM_FOTO_PNG_BERSIH',
+                    imgData: gambarBersihURL
+                }, event.origin);
+            }
+
+            // --- 🔄 KEMBALIKAN POSISI SEMULA: Biar Abang nyaman ngedit lagi ---
+            areaKanvas.style.background = backgroundAsli; // Kembalikan garis kotak cm ruko
+            if (rulerAtas) rulerAtas.style.visibility = 'visible';
+            if (rulerSamping) rulerSamping.style.visibility = 'visible';
+            if (layerCoret) layerCoret.style.visibility = 'visible';
+
+            console.log("📸 Desain putih bersih sukses dikirim balik ke iframe!");
+        }).catch(function(error) {
+            console.error("Gagal motret resik canvas gaib: ", error);
+        });
+    }
+});
 
 function tutupModalKalkulator() {
     const modal = document.getElementById('modal-kalkulator');
@@ -2756,6 +2944,12 @@ window.addEventListener('message', function(event) {
             document.getElementById('modal-teks-melingkar').style.display = 'none';
         }
     }
+  
+    if (event.data && event.data.type === 'TUTUP_MODAL_LEVELS_GAIB') {
+        if (typeof tutupModalLevels === "function") {
+            tutupModalLevels(); // Langsung bikin iframenya 'none' alias ngumpet lagi!
+        }
+    }
 });
 
 // Fungsi pembantu buat masukin hasil tangkapan ke kanvas
@@ -2787,7 +2981,7 @@ function bukaModalMelingkar() {
     if (modal && areaIframe) {
         modal.style.display = 'flex';
         // Panggil file teks-melingkar.html yang bakal kita bikin abis ini
-        areaIframe.innerHTML = `<iframe src="https://centimeterlaser.blogspot.com/2026/05/melingkar.html?m=1" style="width:100%; height:100%; border:none;"></iframe>`;
+        areaIframe.innerHTML = `<iframe src="melingkar.html" style="width:100%; height:100%; border:none;"></iframe>`;
     }
 }
     
