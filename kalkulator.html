@@ -1,21 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-      <link href='https://shorturl.at/1tSRa' rel='icon' type='image/png'/>
-<link href='https://shorturl.at/1tSRa' rel='icon' sizes='192x192'/>
-<link href='https://shorturl.at/1tSRa' rel='apple-touch-icon' sizes='180x180'/>
-<link href='https://shorturl.at/1tSRa'/> 
-<meta content='https://shorturl.at/1tSRa' name='msapplication-TileImage'/>
-<meta content='#c3c3c3' name='theme-color'/>
-<meta content='#c3c3c3' name='msapplication-navbutton-color'/>
-<meta content='yes' name='mobile-web-app-capable'/>
-<meta content='#c3c3c3' name='apple-mobile-web-app-status-bar-style'/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>minieditor laser v2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Jasa Grafir Laser</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Harga Grafir Laser</title>
     <style>
       h3.post-title,.mobile h3.post-title  {
     font-size: 1px;
@@ -80,6 +69,19 @@
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
+}
+      /* Kunci gambar di area cropper supaya anti pop-up pas ditekan lama di HP */
+.cropper-view-box img, 
+.cropper-canvas img,
+#img-preview,
+#img-preview {
+    -webkit-touch-callout: none !important; /* Mematikan menu pop-up download/salin di iOS/Android */
+    -webkit-user-select: none !important;    /* Mematikan seleksi teks/gambar */
+    -khtml-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    pointer-events: none; /* Opsional: membuat gambar mengabaikan klik kanan gaib, tapi cropper tetep fungsi */
 }
     </style>
 </head>
@@ -335,9 +337,66 @@ function tutupAlert() {
     document.getElementById("customAlert").classList.remove("active");
 }
 
-// CARA PAKAI DI FUNGSI KALKULASI:
-// Ganti: alert("Upload gambar dulu ya, Bang!");
-// Jadi: tampilkanAlert("Upload gambar dulu ya, Bang!");
+// A. KUPING PENGINTAI TERBARU (Menerima gambar, nempelin preview, dan mencekokin ke Input File)
+// KUPING PENGINTAI BERSIH (Hanya nyekokin file, gak pake bikin preview duplikat)
+window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'KIRIM_FOTO_PNG_BERSIH') {
+        const gambarPNGHD = event.data.imgData;
+        const uploadArea = document.querySelector('.upload-area');
+        const fileInput = document.getElementById('file-input');
+        
+        if (gambarPNGHD && uploadArea && fileInput) {
+            
+            // --- ⚙️ PROSES SAKTI: Ubah Base64 Jadi File Objek & Cekokin ke Input File ---
+            try {
+                // 1. Pecah data base64 menjadi byte data
+                const byteString = atob(gambarPNGHD.split(',')[1]);
+                const mimeString = gambarPNGHD.split(',')[0].split(':')[1].split(';')[0];
+                
+                const ab = new ArrayBuffer(byteString.length);
+                const ia = new Uint8Array(ab);
+                for (let i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                
+                // 2. Buat objek File murni layaknya hasil upload manual
+                const fileMateng = new File([ab], "desain_ruko_laser.png", { type: mimeString });
+                
+                // 3. Masukkan paksa ke dalam input file menggunakan DataTransfer
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(fileMateng);
+                fileInput.files = dataTransfer.files;
+
+                // 4. PEMICU OTOMATIS: Biar dibaca langsung sama skrip asli bawaan Abang
+                // Ini yang otomatis bakal nampilin gambar ke <img class="preview-img" id="img-preview">
+                const eventChange = new Event('change', { bubbles: true });
+                fileInput.dispatchEvent(eventChange);
+
+                console.log("🔥 Gambar sukses mendarat di #img-preview asli bawaan ruko. Duplikat resmi ditendang!");
+            } catch (err) {
+                console.error("Gagal nyekokin file ke input asli: ", err);
+            }
+        }
+    }
+});
+
+// B. FUNGSI IFRAME TERIAK MINTA GAMBAR (Tetap utuh seperti kemarin)
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.parent && window.parent.postMessage) {
+        window.parent.postMessage({ type: 'MINTA_GAMBAR_PNG' }, '*');
+        console.log("📣 Iframe teriak minta gambar ke Bapak Editor...");
+    }
+});
+
+// B. FUNGSI IFRAME TERIAK MINTA GAMBAR
+document.addEventListener('DOMContentLoaded', function() {
+    // Begitu halaman kebuka, dia langsung teriak ke bapak editor (v2.html)
+    // Taktik postMessage, type: 'MINTA_GAMBAR_PNG'
+    if (window.parent && window.parent.postMessage) {
+        window.parent.postMessage({ type: 'MINTA_GAMBAR_PNG' }, '*');
+        console.log("📣 Iframe udah teriak: 'Pak, tolong kirimin foto desain matengnya!'");
+    }
+});
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
