@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mel-v2-cache-v5';
+const CACHE_NAME = 'mel-v2-cache-v6';
 const urlsToCache = [
   './',
   './index.html',
